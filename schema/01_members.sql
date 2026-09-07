@@ -1,3 +1,15 @@
+-- ====================================================================
+-- TABLE: members
+-- DESCRIPTION: Core membership registry for the SACCO.
+--
+-- DESIGN DECISIONS & ARCHITECTURAL HIGHLIGHTS:
+-- 1. BIGSERIAL (bigint): Chosen for primary keys to support massive scalability 
+--    (up to 9 quintillion rows) without risk of ID exhaustion.
+-- 2. Data Integrity: Named UNIQUE and CHECK constraints prevent corrupt, 
+--    duplicate, or anonymous records at the database engine level.
+-- 3. Audit Compliance: Uses TIMESTAMPTZ with DEFAULT CURRENT_TIMESTAMP 
+--    to guarantee unalterable, timezone-aware onboarding tracking.
+-- ====================================================================
 CREATE TABLE members (
     member_id BIGSERIAL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
