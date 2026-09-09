@@ -407,3 +407,359 @@ VALUES
         'ACTIVE',
         '2025-03-02 09:45:00+03'
     );
+
+-- 3. SEED TRANSACTIONS LEDGER DATA
+-- Posts sequential historical ledger records grouped cleanly by Account ID.
+INSERT INTO
+    transactions (
+        account_id,
+        transaction_type,
+        amount,
+        currency,
+        created_at
+    )
+VALUES
+    -- Member 1 (Naftal Mambo) - Account 1 (SHARES), Account 2 (SAVINGS), Account 3 (LOAN)
+    (
+        1,
+        'DEPOSIT',
+        200000.00,
+        'KES',
+        '2024-03-09 16:00:00+03'
+    ),
+    (
+        1,
+        'DEPOSIT',
+        250000.00,
+        'KES',
+        '2024-04-10 11:15:00+03'
+    ),
+    (
+        2,
+        'DEPOSIT',
+        30000.00,
+        'KES',
+        '2024-03-15 10:00:00+03'
+    ),
+    (
+        2,
+        'WITHDRAWAL',
+        4599.50,
+        'KES',
+        '2024-05-12 14:20:00+03'
+    ),
+    (
+        3,
+        'LOAN REPAYMENT',
+        15000.00,
+        'KES',
+        '2024-07-10 11:00:00+03'
+    ),
+    -- Member 2 (Amina Omondi) - Account 4 (SHARES), Account 5 (SAVINGS)
+    (
+        4,
+        'DEPOSIT',
+        50000.00,
+        'KES',
+        '2024-02-22 09:15:00+03'
+    ),
+    (
+        4,
+        'DEPOSIT',
+        100000.00,
+        'KES',
+        '2024-03-18 10:30:00+03'
+    ),
+    (
+        5,
+        'DEPOSIT',
+        15000.00,
+        'KES',
+        '2024-02-25 14:00:00+03'
+    ),
+    (
+        5,
+        'WITHDRAWAL',
+        2650.00,
+        'KES',
+        '2024-04-02 11:00:00+03'
+    ),
+    -- Member 3 (David Kiprono) - Account 6 (SHARES), Account 7 (SAVINGS)
+    (
+        6,
+        'DEPOSIT',
+        40000.00,
+        'KES',
+        '2024-03-05 11:30:00+03'
+    ),
+    (
+        6,
+        'DEPOSIT',
+        45000.00,
+        'KES',
+        '2024-04-12 09:15:00+03'
+    ),
+    (
+        7,
+        'DEPOSIT',
+        6000.00,
+        'KES',
+        '2024-03-10 16:45:00+03'
+    ),
+    (
+        7,
+        'WITHDRAWAL',
+        1500.00,
+        'KES',
+        '2024-05-18 13:00:00+03'
+    ),
+    -- Member 4 (Grace Wambui) - Account 8 (SHARES), Account 9 (LOAN)
+    (
+        8,
+        'DEPOSIT',
+        120000.00,
+        'KES',
+        '2024-04-15 08:30:00+03'
+    ),
+    (
+        8,
+        'DEPOSIT',
+        200000.00,
+        'KES',
+        '2024-06-01 10:00:00+03'
+    ),
+    (
+        9,
+        'LOAN REPAYMENT',
+        15000.00,
+        'KES',
+        '2024-12-18 13:16:00+03'
+    ),
+    (
+        9,
+        'LOAN REPAYMENT',
+        20000.00,
+        'KES',
+        '2025-01-18 10:00:00+03'
+    ),
+    -- Member 5 (Michael Onyango) - Account 10 (SHARES), Account 11 (SAVINGS)
+    (
+        10,
+        'DEPOSIT',
+        25000.00,
+        'KES',
+        '2024-05-20 10:00:00+03'
+    ),
+    (
+        10,
+        'DEPOSIT',
+        30000.00,
+        'KES',
+        '2024-06-15 09:30:00+03'
+    ),
+    (
+        11,
+        'DEPOSIT',
+        10000.00,
+        'KES',
+        '2024-05-25 11:15:00+03'
+    ),
+    (
+        11,
+        'WITHDRAWAL',
+        2199.50,
+        'KES',
+        '2024-07-20 16:00:00+03'
+    ),
+    -- Member 6 (Sarah Cherotich) - Account 12 (SHARES)
+    (
+        12,
+        'DEPOSIT',
+        50000.00,
+        'KES',
+        '2024-06-25 10:30:00+03'
+    ),
+    (
+        12,
+        'DEPOSIT',
+        60000.00,
+        'KES',
+        '2024-08-01 14:00:00+03'
+    ),
+    -- Member 7 (John Mutua) - Account 13 (SHARES), Account 14 (SAVINGS)
+    (
+        13,
+        'DEPOSIT',
+        45000.00,
+        'KES',
+        '2024-07-05 14:20:00+03'
+    ),
+    (
+        13,
+        'DEPOSIT',
+        50000.00,
+        'KES',
+        '2024-09-10 11:15:00+03'
+    ),
+    (
+        14,
+        'DEPOSIT',
+        20000.00,
+        'KES',
+        '2024-07-12 09:00:00+03'
+    ),
+    (
+        14,
+        'WITHDRAWAL',
+        5000.00,
+        'KES',
+        '2024-10-05 15:30:00+03'
+    ),
+    -- Member 8 (Fatma Ali) - Account 15 (SHARES)
+    (
+        15,
+        'DEPOSIT',
+        100000.00,
+        'KES',
+        '2024-08-15 09:30:00+03'
+    ),
+    (
+        15,
+        'DEPOSIT',
+        100000.00,
+        'KES',
+        '2024-11-20 13:45:00+03'
+    ),
+    -- Member 9 (Emmanuel Wekesa) - Account 16 (SHARES)
+    (
+        16,
+        'DEPOSIT',
+        20000.00,
+        'KES',
+        '2024-09-06 11:00:00+03'
+    ),
+    (
+        16,
+        'DEPOSIT',
+        25000.00,
+        'KES',
+        '2024-12-01 10:15:00+03'
+    ),
+    -- Member 10 (Mary Atieno) - Account 17 (SHARES), Account 18 (SAVINGS)
+    (
+        17,
+        'DEPOSIT',
+        60000.00,
+        'KES',
+        '2024-10-25 15:30:00+03'
+    ),
+    (
+        17,
+        'DEPOSIT',
+        70000.00,
+        'KES',
+        '2024-12-15 09:00:00+03'
+    ),
+    (
+        18,
+        'DEPOSIT',
+        5000.00,
+        'KES',
+        '2024-11-01 10:15:00+03'
+    ),
+    (
+        18,
+        'WITHDRAWAL',
+        1600.00,
+        'KES',
+        '2025-01-10 14:20:00+03'
+    ),
+    -- Member 11 (Samuel Kamau) - Account 19 (SHARES)
+    (
+        19,
+        'DEPOSIT',
+        35000.00,
+        'KES',
+        '2024-12-01 09:00:00+03'
+    ),
+    (
+        19,
+        'DEPOSIT',
+        40000.00,
+        'KES',
+        '2025-01-15 11:00:00+03'
+    ),
+    -- Member 12 (Joy Chepngetich) - Account 20 (SHARES), Account 21 (SAVINGS)
+    (
+        20,
+        'DEPOSIT',
+        30000.00,
+        'KES',
+        '2024-12-15 14:00:00+03'
+    ),
+    (
+        20,
+        'DEPOSIT',
+        30000.00,
+        'KES',
+        '2025-01-20 09:45:00+03'
+    ),
+    (
+        21,
+        'DEPOSIT',
+        10000.00,
+        'KES',
+        '2024-12-20 16:30:00+03'
+    ),
+    (
+        21,
+        'WITHDRAWAL',
+        8000.00,
+        'KES',
+        '2025-02-05 13:15:00+03'
+    ),
+    -- Member 13 (Peter Njoroge) - Account 22 (SHARES)
+    (
+        22,
+        'DEPOSIT',
+        250000.00,
+        'KES',
+        '2025-01-10 10:00:00+03'
+    ),
+    (
+        22,
+        'DEPOSIT',
+        250000.00,
+        'KES',
+        '2025-02-28 16:30:00+03'
+    ),
+    -- Member 14 (Lucy Mwari) - Account 23 (SHARES)
+    (
+        23,
+        'DEPOSIT',
+        55000.00,
+        'KES',
+        '2025-02-15 11:30:00+03'
+    ),
+    (
+        23,
+        'DEPOSIT',
+        60000.00,
+        'KES',
+        '2025-03-05 10:00:00+03'
+    ),
+    -- Member 15 (Brian Otieno) - Account 24 (SHARES)
+    (
+        24,
+        'DEPOSIT',
+        20000.00,
+        'KES',
+        '2025-03-02 09:45:00+03'
+    ),
+    (
+        24,
+        'DEPOSIT',
+        20000.00,
+        'KES',
+        '2025-03-08 14:00:00+03'
+    );
