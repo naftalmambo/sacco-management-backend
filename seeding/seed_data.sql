@@ -763,3 +763,57 @@ VALUES
         'KES',
         '2025-03-08 14:00:00+03'
     );
+
+-- 4. SEED LOANS REGISTER DATA
+-- Records historical credit facility approvals and pending loan underwriting applications.
+INSERT INTO
+    loans (
+        member_id,
+        principal_amount,
+        interest_rate,
+        loan_status,
+        currency,
+        applied_at,
+        disbursed_at
+    )
+VALUES
+    -- Member 1 (Naftal Mambo) - Development Loan Facility (Remaining Debt tracks to Account ID 3)
+    (
+        1,
+        165000.00,
+        12.00,
+        'ACTIVE',
+        'KES',
+        '2024-03-20 09:00:00+03',
+        '2024-06-10 14:00:00+03'
+    ),
+    -- Member 4 (Grace Wambui) - Emergency Credit Line (Remaining Debt tracks to Account ID 9)
+    (
+        4,
+        285000.00,
+        14.50,
+        'ACTIVE',
+        'KES',
+        '2024-08-19 15:45:00+03',
+        '2024-08-20 11:30:00+03'
+    ),
+    -- Member 7 (John Mutua) - New Application Pipeline Testing (Awaiting Credit Board Review)
+    (
+        7,
+        50000.00,
+        13.00,
+        'PENDING APPROVAL',
+        'KES',
+        '2024-11-05 10:15:00+03',
+        NULL -- No disbursement date yet because it is not active
+    ),
+    -- Member 10 (Mary Atieno) - New Application Pipeline Testing (Awaiting Underwriting Review)
+    (
+        10,
+        120000.00,
+        13.50,
+        'PENDING APPROVAL',
+        'KES',
+        '2025-01-20 11:00:00+03',
+        NULL -- No disbursement date yet because it is not active
+    );
