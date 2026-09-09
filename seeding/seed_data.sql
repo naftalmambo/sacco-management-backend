@@ -183,3 +183,227 @@ VALUES
         'Kisumu',
         '2025-03-01 16:00:00+03'
     );
+
+-- 2. SEED ACCOUNTS DATA
+-- Establishes financial assets and credit tracking balances across all 15 member IDs.
+INSERT INTO
+    accounts (
+        member_id,
+        account_type,
+        balance,
+        currency,
+        account_status,
+        created_at
+    )
+VALUES
+    -- Member 1 (Naftal Mambo) - Joined 2024-01-15
+    (
+        1,
+        'SHARES',
+        450000.00,
+        'KES',
+        'ACTIVE',
+        '2024-03-09 16:00:00+03'
+    ),
+    (
+        1,
+        'SAVINGS',
+        25400.50,
+        'KES',
+        'ACTIVE',
+        '2024-03-15 10:00:00+03'
+    ),
+    (
+        1,
+        'LOAN',
+        150000.00,
+        'KES',
+        'ACTIVE',
+        '2024-06-10 14:00:00+03'
+    ),
+    -- Outstanding credit debt balance
+    -- Member 2 (Amina Omondi) - Joined 2024-02-20
+    (
+        2,
+        'SHARES',
+        150000.00,
+        'KES',
+        'ACTIVE',
+        '2024-02-22 09:15:00+03'
+    ),
+    (
+        2,
+        'SAVINGS',
+        12350.00,
+        'KES',
+        'ACTIVE',
+        '2024-02-25 14:00:00+03'
+    ),
+    -- Member 3 (David Kiprono) - Joined 2024-03-05
+    (
+        3,
+        'SHARES',
+        85000.00,
+        'KES',
+        'ACTIVE',
+        '2024-03-05 11:30:00+03'
+    ),
+    (
+        3,
+        'SAVINGS',
+        4500.00,
+        'KES',
+        'ACTIVE',
+        '2024-03-10 16:45:00+03'
+    ),
+    -- Member 4 (Grace Wambui) - Joined 2024-04-12
+    (
+        4,
+        'SHARES',
+        320000.00,
+        'KES',
+        'ACTIVE',
+        '2024-04-15 08:30:00+03'
+    ),
+    (
+        4,
+        'LOAN',
+        250000.00,
+        'KES',
+        'ACTIVE',
+        '2024-08-20 11:30:00+03'
+    ),
+    -- Outstanding credit debt balance
+    -- Member 5 (Michael Onyango) - Joined 2024-05-19
+    (
+        5,
+        'SHARES',
+        55000.00,
+        'KES',
+        'ACTIVE',
+        '2024-05-20 10:00:00+03'
+    ),
+    (
+        5,
+        'SAVINGS',
+        7800.50,
+        'KES',
+        'FROZEN',
+        '2024-05-25 11:15:00+03'
+    ),
+    -- Frozen account test matrix
+    -- Member 6 (Sarah Cherotich) - Joined 2024-06-25
+    (
+        6,
+        'SHARES',
+        110000.00,
+        'KES',
+        'ACTIVE',
+        '2024-06-25 10:30:00+03'
+    ),
+    -- Member 7 (John Mutua) - Joined 2024-07-02
+    (
+        7,
+        'SHARES',
+        95000.00,
+        'KES',
+        'ACTIVE',
+        '2024-07-05 14:20:00+03'
+    ),
+    (
+        7,
+        'SAVINGS',
+        15000.00,
+        'KES',
+        'ACTIVE',
+        '2024-07-12 09:00:00+03'
+    ),
+    -- Member 8 (Fatma Ali) - Joined 2024-08-14
+    (
+        8,
+        'SHARES',
+        200000.00,
+        'KES',
+        'ACTIVE',
+        '2024-08-15 09:30:00+03'
+    ),
+    -- Member 9 (Emmanuel Wekesa) - Joined 2024-09-05
+    (
+        9,
+        'SHARES',
+        45000.00,
+        'KES',
+        'ACTIVE',
+        '2024-09-06 11:00:00+03'
+    ),
+    -- Member 10 (Mary Atieno) - Joined 2024-10-22
+    (
+        10,
+        'SHARES',
+        130000.00,
+        'KES',
+        'ACTIVE',
+        '2024-10-25 15:30:00+03'
+    ),
+    (
+        10,
+        'SAVINGS',
+        3400.00,
+        'KES',
+        'ACTIVE',
+        '2024-11-01 10:15:00+03'
+    ),
+    -- Member 11 (Samuel Kamau) - Joined 2024-11-30
+    (
+        11,
+        'SHARES',
+        75000.00,
+        'KES',
+        'ACTIVE',
+        '2024-12-01 09:00:00+03'
+    ),
+    -- Member 12 (Joy Chepngetich) - Joined 2024-12-12
+    (
+        12,
+        'SHARES',
+        60000.00,
+        'KES',
+        'ACTIVE',
+        '2024-12-15 14:00:00+03'
+    ),
+    (
+        12,
+        'SAVINGS',
+        9200.00,
+        'KES',
+        'SUSPENDED',
+        '2024-12-20 16:30:00+03'
+    ),
+    -- Suspended account test matrix
+    -- Member 13 (Peter Njoroge) - Joined 2025-01-08
+    (
+        13,
+        'SHARES',
+        500000.00,
+        'KES',
+        'ACTIVE',
+        '2025-01-10 10:00:00+03'
+    ),
+    -- Member 14 (Lucy Mwari) - Joined 2025-02-14
+    (
+        14,
+        'SHARES',
+        115000.00,
+        'KES',
+        'ACTIVE',
+        '2025-02-15 11:30:00+03'
+    ),
+    -- Member 15 (Brian Otieno) - Joined 2025-03-01
+    (
+        15,
+        'SHARES',
+        40000.00,
+        'KES',
+        'ACTIVE',
+        '2025-03-02 09:45:00+03'
+    );
