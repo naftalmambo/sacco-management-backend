@@ -21,6 +21,7 @@ CREATE TABLE accounts (
     account_id BIGSERIAL PRIMARY KEY,
     member_id bigint NOT NULL,
     account_type TEXT NOT NULL CONSTRAINT chk_acc_type CHECK (account_type IN ('SAVINGS', 'SHARES', 'LOAN')),
+    balance NUMERIC(15, 2) DEFAULT 0.00 NOT NULL CONSTRAINT chk_account_balance CHECK (balance >= 0),
     currency VARCHAR(3) DEFAULT 'KES' NOT NULL CONSTRAINT chk_account_currency CHECK (currency = 'KES'),
     account_status VARCHAR(15) DEFAULT 'ACTIVE' NOT NULL CONSTRAINT chk_account_status CHECK (
         account_status IN ('ACTIVE', 'FROZEN', 'SUSPENDED')
