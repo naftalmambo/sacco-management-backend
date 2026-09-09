@@ -32,7 +32,7 @@ CREATE TABLE loans (
     ),
     currency VARCHAR(3) DEFAULT 'KES' NOT NULL CONSTRAINT chk_loan_currency CHECK (currency = 'KES'),
     applied_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    disbursed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    disbursed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     -- Table Constraints placed cleanly at the bottom
     CONSTRAINT fk_loans_member FOREIGN KEY (member_id) REFERENCES members (member_id) ON DELETE RESTRICT
 );
