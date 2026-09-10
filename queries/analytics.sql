@@ -50,3 +50,33 @@ FROM
     accounts
 GROUP BY
     account_type;
+
+-- ====================================================================
+-- BUSINESS REPORT #3: CREDIT RISK AUDIT
+-- ====================================================================
+-- WHAT IT DOES: 
+-- This report shows a list of all members who currently have active loans.
+-- It displays their full name, the original amount they borrowed, and 
+-- the current debt balance they still owe back to the SACCO.
+-- It automatically hides pending applications that have not been paid out yet.
+--
+-- HOW IT WORKS:
+--   * It uses INNER JOIN to link three tables together: loans, members, and accounts.
+--   * It uses a WHERE filter to pull only 'LOAN' account types.
+--   * It tracks the outstanding debt by reading the live balance column.
+--
+-- TABLES USED:
+--   * public.loans    (To get the original principal amount)
+--   * public.members  (To get the member names)
+--   * public.accounts (To get the current outstanding debt balance)
+-- ====================================================================
+SELECT
+    (first_name || ' ' || last_name) AS member_name,
+    principal_amount,
+    balance AS outstanding_debt
+FROM
+    loans l
+    INNER JOIN members m ON l.member_id = m.member_id
+    INNER JOIN accounts a ON l.member_id = a.member_id
+WHERE
+    a.account_type = 'LOAN';
