@@ -80,3 +80,52 @@ FROM
     INNER JOIN accounts a ON l.member_id = a.member_id
 WHERE
     a.account_type = 'LOAN';
+
+-- ====================================================================
+-- DATA WORKFLOW: SECURE CASH WITHDRAWAL TRANSACTION
+-- ====================================================================
+-- WHAT IT DOES: 
+-- This script simulates a real-world bank teller operation where a member 
+-- makes a cash withdrawal from their savings account.
+-- It ensures that money cannot be deducted from a balance without leaving 
+-- a matching receipt log in the transaction history ledger.
+--
+-- HOW IT WORKS:
+--   * It uses BEGIN to open a safe, isolated database transaction block.
+--   * Step 1: INSERTs a new history record into the transactions table.
+--   * Step 2: UPDATEs the accounts table to subtract 5,000 KES from the balance.
+--   * It uses COMMIT to permanently lock both changes onto the disk at once.
+--
+-- TABLES ALTERED:
+--   * public.transactions (Appends a new 'WITHDRAWAL' audit row)
+--   * public.accounts     (Reduces the balance column where account_id = 2)
+-- ====================================================================
+BEGIN;
+
+-- Step 1: Log the audit receipt
+INSERT INTO
+    transactions (
+        account_id,
+        transaction_type,
+        amount,
+        currency,
+        created_at
+    )
+VALUES
+    (
+        2,
+        'WITHDRAWAL',
+        5000.00,
+        'KES',
+        '2026-01-20 11:00:00+03'
+    );
+
+-- Step 2: Reduce the liquid vault balance
+UPDATE
+    accounts
+SET
+    balance = balance - 5000.00
+WHERE
+    account_id = 2;
+
+COMMIT;
