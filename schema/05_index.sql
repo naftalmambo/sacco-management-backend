@@ -1,0 +1,18 @@
+-- ====================================================================
+-- PERFORMANCE TUNING: CUSTOM DATABASE INDEXES
+-- ====================================================================
+-- WHAT IT DOES: 
+-- This file creates custom search maps called indexes inside the database.
+-- It helps bank tellers search through tens of thousands of customer profiles 
+-- instantly without making the database server slow down or freeze.
+--
+-- HOW IT WORKS:
+--   * It builds a hidden, organized B-Tree lookup map for specific columns.
+--   * When a teller searches for a customer by last name, the database leaps 
+--     straight to that record instead of scanning the whole table row-by-row.
+--   * Primary keys and unique columns already have automatic hidden indexes.
+--
+-- TABLES OPTIMISED:
+--   * public.members (Speeds up member search fields by last_name)
+-- ====================================================================
+CREATE INDEX idx_last_name ON members(last_name);
