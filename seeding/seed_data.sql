@@ -23,7 +23,7 @@ VALUES
         'Mambo',
         '1992-04-22',
         'Male',
-        'naftal.mwangi@saccotech.co.ke',
+        'naftal.mambo@saccotech.co.ke',
         '+254712345678',
         'Kenya',
         'Nairobi',
