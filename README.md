@@ -22,7 +22,7 @@ This application completely automates transaction ledger tracking, member accoun
 
 ### 1. Active Database Tables
 
-This terminal screenshot shows that our four core tables (`members`, `accounts`, `transactions`, and `loans`) are successfully built inside the database. It proves that all tables are uniformly owned by the `sacco_admin` user account:
+This terminal screenshot shows that our four core tables (`01_members`, `02_accounts`, `03_transactions`, and `04_loans`) are successfully built inside the database. It proves that all tables are uniformly owned by the `sacco_admin` user account:
 ![Active Database Tables](images/tables.png)
 
 ### 2. Live Seeded Member Records
@@ -59,11 +59,11 @@ This map shows the location of every file created inside the project directory:
 │   ├── membertable.png      # Terminal screenshot of active members table records
 │   └── balancesheetquery.png# Terminal screenshot of master member balance sheet report
 ├── schema/
-│   ├── members.sql          # Core member data structural blueprints
-│   ├── accounts.sql         # Account tracking schemas and constraints
-│   ├── transactions.sql     # Ledger transaction tables and audit logs
-│   ├── loans.sql            # Credit facilities and loan repayment schedules
-│   └── indexes.sql          # Customized B-Tree and execution indexing layers
+│   ├── 01_members.sql          # Core member data structural blueprints
+│   ├── 02_accounts.sql         # Account tracking schemas and constraints
+│   ├── 03_transactions.sql     # Ledger transaction tables and audit logs
+│   ├── 04_loans.sql            # Credit facilities and loan repayment schedules
+│   └── 05_indexes.sql          # Customized B-Tree and execution indexing layers
 ├── seeding/
 │   └── seeding.sql          # Core records and initial table inputs
 └── queries/
@@ -105,13 +105,13 @@ Run these commands in order to create your database tables sequentially, mount y
 
 ```bash
 # Rebuild the database tables sequentially
-sudo -u postgres psql -d sacco_management_db -f schema/members.sql
-sudo -u postgres psql -d sacco_management_db -f schema/accounts.sql
-sudo -u postgres psql -d sacco_management_db -f schema/transactions.sql
-sudo -u postgres psql -d sacco_management_db -f schema/loans.sql
+sudo -u postgres psql -d sacco_management_db -f schema/01_members.sql
+sudo -u postgres psql -d sacco_management_db -f schema/02_accounts.sql
+sudo -u postgres psql -d sacco_management_db -f schema/03_transactions.sql
+sudo -u postgres psql -d sacco_management_db -f schema/04_loans.sql
 
 # Load the performance tuning indexes
-sudo -u postgres psql -d sacco_management_db -f schema/indexes.sql
+sudo -u postgres psql -d sacco_management_db -f schema/05_indexes.sql
 
 # Seed the initial member data records
 sudo -u postgres psql -d sacco_management_db -f seeding/seeding.sql
