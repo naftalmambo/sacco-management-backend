@@ -1,10 +1,10 @@
--- 1. SEED MEMBERS DATA
--- Includes 15 valid Kenyan profiles with explicit historical joining timelines.
 TRUNCATE TABLE transactions,
 loans,
 accounts,
 members RESTART IDENTITY CASCADE;
 
+-- 1. SEED MEMBERS DATA
+-- Includes 15 valid Kenyan profiles with explicit historical joining timelines.
 INSERT INTO
     members (
         first_name,
