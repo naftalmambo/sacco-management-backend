@@ -5,8 +5,8 @@ members RESTART IDENTITY CASCADE;
 
 -- 1. SEED MEMBERS DATA
 -- Includes 15 valid Kenyan profiles with explicit historical joining timelines.
-INSERT INTO
-    members (
+INSERT
+    INTOm members (
         first_name,
         last_name,
         date_of_birth,
