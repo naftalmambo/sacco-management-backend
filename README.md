@@ -22,7 +22,7 @@ This application completely automates transaction ledger tracking, member accoun
 
 ### 1. Active Database Tables
 
-This terminal screenshot shows that our four core tables (`01_members`, `02_accounts`, `03_transactions`, and `04_loans`) are successfully built inside the database. It proves that all tables are uniformly owned by the `sacco_admin` user account:
+This terminal screenshot shows that our four core tables (`members`, `accounts`, `transactions`, and `loans`) are successfully built inside the database. It proves that all tables are uniformly owned by the `sacco_admin` user account:
 ![Active Database Tables](images/tables.png)
 
 ### 2. Live Seeded Member Records
@@ -52,12 +52,12 @@ This map shows the location of every file created inside the project directory:
 
 ```text
 ~/sacco-management-backend/
-├── README.md                # System documentation and developer setup guide
-├── LICENSE                  # Open-source MIT License terms and conditions
+├── README.md                   # System documentation and developer setup guide
+├── LICENSE                     # Open-source MIT License terms and conditions
 ├── images/
-│   ├── tables.png           # Terminal screenshot of relational database tables
-│   ├── membertable.png      # Terminal screenshot of active members table records
-│   └── balancesheetquery.png# Terminal screenshot of master member balance sheet report
+│   ├── tables.png              # Terminal screenshot of relational database tables
+│   ├── membertable.png         # Terminal screenshot of active members table records
+│   └── balancesheetquery.png   # Terminal screenshot of master member balance sheet report
 ├── schema/
 │   ├── 01_members.sql          # Core member data structural blueprints
 │   ├── 02_accounts.sql         # Account tracking schemas and constraints
@@ -65,9 +65,9 @@ This map shows the location of every file created inside the project directory:
 │   ├── 04_loans.sql            # Credit facilities and loan repayment schedules
 │   └── 05_indexes.sql          # Customized B-Tree and execution indexing layers
 ├── seeding/
-│   └── seeding.sql          # Core records and initial table inputs
+│   └── seeding.sql             # Core records and initial table inputs
 └── queries/
-    └── analytics.sql        # Reference SQL multi-table JOIN aggregation scripts
+    └── analytics.sql           # Reference SQL multi-table JOIN aggregation scripts
 ```
 
 ---
@@ -111,10 +111,10 @@ sudo -u postgres psql -d sacco_management_db -f schema/03_transactions.sql
 sudo -u postgres psql -d sacco_management_db -f schema/04_loans.sql
 
 # Load the performance tuning indexes
-sudo -u postgres psql -d sacco_management_db -f schema/05_indexes.sql
+sudo -u postgres psql -d sacco_management_db -f schema/05_index.sql
 
 # Seed the initial member data records
-sudo -u postgres psql -d sacco_management_db -f seeding/seeding.sql
+sudo -u postgres psql -d sacco_management_db -f seeding/seed_data.sql
 ```
 
 ### Step 2: Configure Database User Security
@@ -177,8 +177,8 @@ ORDER BY
 
 ## 🧠 Lessons Learned
 
-- **Splitting Up Database Blueprints:** Practiced breaking a database system down into separate files (`members`, `accounts`, `transactions`, and `loans`) to make the setup cleaner and easier to manage.
-- **Making Queries Run Faster:** Learned how to create custom performance shortcuts (B-Tree indexes) inside a standalone `indexes.sql` script to eliminate search lag when pulling large reports.
+- **Splitting Up Database Blueprints:** Practiced breaking a database system down into separate files (`01_members`, `02_accounts`, `03_transactions`, and `04_loans`) to make the setup cleaner and easier to manage.
+- **Making Queries Run Faster:** Learned how to create custom performance shortcuts (B-Tree indexes) inside a standalone `index.sql` script to eliminate search lag when pulling large reports.
 - **Linking Multiple Tables Together:** Mastered how to write clean `INNER JOIN` and `LEFT JOIN` queries to link four different tables together and build a complete member balance sheet.
 - **Protecting Financial Balances:** Learned how to create a custom database data type (Domain Validation) with a strict zero-minimum rule to completely block accidental negative balances and stop transaction errors before they hit the disk.
 
