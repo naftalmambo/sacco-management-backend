@@ -63,9 +63,9 @@ This map shows the location of every file created inside the project directory:
 │   ├── 02_accounts.sql         # Account tracking schemas and constraints
 │   ├── 03_transactions.sql     # Ledger transaction tables and audit logs
 │   ├── 04_loans.sql            # Credit facilities and loan repayment schedules
-│   └── 05_indexes.sql          # Customized B-Tree and execution indexing layers
+│   └── 05_index.sql            # Customized B-Tree and execution indexing layers
 ├── seeding/
-│   └── seeding.sql             # Core records and initial table inputs
+│   └── seed_data.sql           # Core records and initial table inputs
 └── queries/
     └── analytics.sql           # Reference SQL multi-table JOIN aggregation scripts
 ```
