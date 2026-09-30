@@ -62,4 +62,13 @@ public class SaccoMember {
         return this.county;
     }
 
+    @Override
+    public String toString() {
+        return "Member [ID: " + this.memberId +
+                ", Name: " + this.firstName + " " + this.lastName +
+                ", Sex: " + this.sex +
+                ", Phone: " + this.phoneNumber +
+                ", Location: " + this.country + ", " + this.county + "]";
+    }
+
 }
