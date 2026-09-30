@@ -31,4 +31,22 @@ public class SaccoAccount {
 
     }
 
+    public void deposit(long amountInCents) {
+        if (amountInCents > 0) {
+            this.balanceInCents += amountInCents;
+
+        }
+
+    }
+
+    public boolean withdraw(long amountInCents) {
+        if (amountInCents > 0 && (this.balanceInCents - amountInCents) >= 100000) {
+            this.balanceInCents = this.balanceInCents - amountInCents;
+            return true;
+
+        }
+        return false;
+
+    }
+
 }
