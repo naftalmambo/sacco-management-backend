@@ -16,4 +16,24 @@ public class LedgerTransaction {
 
     }
 
+    public long getTransactionId() {
+        return this.transactionId;
+    }
+
+    public long getAccountId() {
+        return this.accountId;
+    }
+
+    public String getTransactionType() {
+        return this.transactionType;
+    }
+
+    public long getAmountInCents() {
+        return this.amountInCents;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
 }
