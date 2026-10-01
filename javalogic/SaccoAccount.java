@@ -1,6 +1,7 @@
 public class SaccoAccount {
 
     private String accountNumber;
+
     private long memberId;
     private String accountType;
     private long balanceInCents;
