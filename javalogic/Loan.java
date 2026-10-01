@@ -20,4 +20,32 @@ public class Loan {
 
     }
 
+    public long getLoanId() {
+        return this.loanId;
+    }
+
+    public long getMemberId() {
+        return this.memberId;
+    }
+
+    public long getPrincipleAmountInCents() {
+        return this.principleAmountInCents;
+    }
+
+    public double getInterestRate() {
+        return interestRate;
+    }
+
+    public String getLoanStatus() {
+        return loanStatus;
+    }
+
+    public LocalDateTime getAppliedAt() {
+        return appliedAt;
+    }
+
+    public LocalDateTime getDisbursedAt() {
+        return disbursedAt;
+    }
+
 }
