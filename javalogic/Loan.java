@@ -58,4 +58,40 @@ public class Loan {
 
     }
 
+    public void disburseLoan() {
+        if (!(this.loanStatus.equals("PENDING APPROVAL"))) {
+            throw new IllegalStateException("Only loans with PENDING APPROVAL status can be disbursed");
+        }
+        this.loanStatus = "ACTIVE";
+        this.disbursedAt = LocalDateTime.now();
+    }
+
+    public void repayLoan(LedgerTransaction transaction) {
+        if (!this.loanStatus.equals("ACTIVE")) {
+            throw new IllegalStateException("Loan is not active for repayments");
+        }
+
+        if (!transaction.getTransactionType().equals("LOAN REPAYMENT")) {
+            throw new IllegalArgumentException("Invalid transaction type for loan repayment");
+        }
+
+        this.principleAmountInCents -= transaction.getAmountInCents();
+
+        if (this.principleAmountInCents <= 0) {
+            this.principleAmountInCents = 0;
+            this.loanStatus = "FULLY PAID";
+        }
+    }
+
+    @Override
+    public String toString() {
+        long shillings = this.principleAmountInCents / 100;
+        long cents = this.principleAmountInCents % 100;
+
+        return "Loan [ID: " + this.loanId + " | Member ID: " + this.memberId + " | Status: "
+                + this.loanStatus + " | Principal: " + shillings + "." + cents + " KSh | Rate: "
+                + this.interestRate + "% | Applied: " + this.appliedAt + "]";
+
+    }
+
 }
