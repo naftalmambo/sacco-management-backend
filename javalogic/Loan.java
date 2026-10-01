@@ -10,6 +10,7 @@ public class Loan {
     private LocalDateTime disbursedAt;
 
     public Loan(long memberId, long principleAmountInCents, double interestRate) {
+        validateLoanData(principleAmountInCents, interestRate);
         this.loanId = 0;
         this.memberId = memberId;
         this.principleAmountInCents = principleAmountInCents;
@@ -33,19 +34,28 @@ public class Loan {
     }
 
     public double getInterestRate() {
-        return interestRate;
+        return this.interestRate;
     }
 
     public String getLoanStatus() {
-        return loanStatus;
+        return this.loanStatus;
     }
 
     public LocalDateTime getAppliedAt() {
-        return appliedAt;
+        return this.appliedAt;
     }
 
     public LocalDateTime getDisbursedAt() {
-        return disbursedAt;
+        return this.disbursedAt;
+    }
+
+    private void validateLoanData(long principleAmountInCents, double interestRate) {
+        if (principleAmountInCents <= 0 || interestRate <= 0) {
+            throw new IllegalArgumentException(
+                    "Loan principal amount and interest rate must be strictly greater than zero");
+
+        }
+
     }
 
 }
