@@ -62,6 +62,14 @@ public class SaccoMember {
         return this.county;
     }
 
+    public void validateMemberData(LocalDate dateOfBirth) {
+        if (java.time.Period.between(dateOfBirth, LocalDate.now()).getYears() < 18) {
+            throw new IllegalArgumentException("Member must be at least 18 years old to register.");
+
+        }
+
+    }
+
     @Override
     public String toString() {
         return "Member [ID: " + this.memberId +
