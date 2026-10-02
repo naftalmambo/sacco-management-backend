@@ -1,0 +1,6 @@
+com/sacco/domain/SaccoMember.class
+com/sacco/domain/LedgerTransaction.class
+DatabaseManager.class
+com/sacco/Main.class
+com/sacco/domain/Loan.class
+com/sacco/domain/SaccoAccount.class
