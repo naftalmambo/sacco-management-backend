@@ -1,3 +1,5 @@
+package com.sacco.domain;
+
 import java.time.LocalDate;
 
 public class SaccoMember {

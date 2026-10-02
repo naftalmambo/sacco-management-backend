@@ -1,3 +1,5 @@
+package com.sacco.domain;
+
 import java.time.LocalDateTime;
 
 public class Loan {

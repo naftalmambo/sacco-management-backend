@@ -1,3 +1,5 @@
+package com.sacco.domain;
+
 public class SaccoAccount {
 
     private String accountNumber;
