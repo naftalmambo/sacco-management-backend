@@ -42,13 +42,21 @@ public class SaccoAccount {
 
     }
 
-    public boolean withdraw(long amountInCents) {
-        if (amountInCents > 0 && (this.balanceInCents - amountInCents) >= 100000) {
-            this.balanceInCents = this.balanceInCents - amountInCents;
-            return true;
+    public void withdraw(long amountInCents) {
+
+        if (!(accountType.equals("SAVINGS"))) {
+            throw new IllegalArgumentException("Withdrawals are restricted strictly to SAVINGS accounts only");
 
         }
-        return false;
+        if (amountInCents <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be greater than zero");
+        }
+
+        if ((this.balanceInCents - amountInCents) < 100000) {
+            throw new IllegalArgumentException("Insufficient funds: Account balance cannot drop below 1,000 KSh");
+        }
+
+        this.balanceInCents -= amountInCents;
 
     }
 
