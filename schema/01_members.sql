@@ -23,6 +23,7 @@ CREATE TABLE members (
     sex VARCHAR(10) NOT NULL CONSTRAINT chk_member_sex CHECK (sex IN ('Male', 'Female')),
     email_address VARCHAR(100) NOT NULL CONSTRAINT uq_member_email UNIQUE,
     phone_number VARCHAR(15) NOT NULL CONSTRAINT uq_member_phone UNIQUE CONSTRAINT chk_kenyan_phone CHECK (phone_number ~ '^\+254\d{9}$'),
+    national_id VARCHAR(20) NOT NULL CONSTRAINT uq_member_national_id UNIQUE,
     country VARCHAR(30) DEFAULT 'Kenya' NOT NULL CONSTRAINT chk_member_country CHECK (country = 'Kenya'),
     county VARCHAR(50) NOT NULL,
     joined_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP

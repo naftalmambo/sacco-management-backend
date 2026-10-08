@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS accounts CASCADE;
 CREATE TABLE accounts (
     account_id BIGSERIAL PRIMARY KEY,
     member_id bigint NOT NULL,
+    account_number VARCHAR(30) NOT NULL CONSTRAINT uq_account_number UNIQUE,
     account_type TEXT NOT NULL CONSTRAINT chk_acc_type CHECK (account_type IN ('SAVINGS', 'SHARES', 'LOAN')),
     balance NUMERIC(15, 2) DEFAULT 0.00 NOT NULL CONSTRAINT chk_account_balance CHECK (balance >= 0),
     currency VARCHAR(3) DEFAULT 'KES' NOT NULL CONSTRAINT chk_account_currency CHECK (currency = 'KES'),

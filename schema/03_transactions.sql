@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS transactions CASCADE;
 CREATE TABLE transactions (
     transaction_id BIGSERIAL PRIMARY KEY,
     account_id bigint NOT NULL,
+    loan_id BIGINT DEFAULT NULL,
     transaction_type VARCHAR(20) NOT NULL CONSTRAINT chk_trans_type CHECK (
         transaction_type IN ('DEPOSIT', 'WITHDRAWAL', 'LOAN REPAYMENT')
     ),
