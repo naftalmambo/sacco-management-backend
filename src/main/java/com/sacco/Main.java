@@ -2,6 +2,7 @@ package com.sacco;
 
 import com.sacco.domain.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.sql.*;
 
 public class Main {
@@ -42,6 +43,7 @@ public class Main {
                             ResultSet accRs = accStmt.executeQuery(accountQuery)) {
 
                         while (accRs.next()) {
+                            long accountId = accRs.getLong("account_id");
                             String accountNumber = accRs.getString("account_number");
                             long accmemberId = accRs.getLong("member_id");
                             String accountType = accRs.getString("account_type");
@@ -50,6 +52,27 @@ public class Main {
                             SaccoAccount accountOne = new SaccoAccount(accountNumber, accmemberId, accountType,
                                     balanceInCents);
                             System.out.println(accountOne);
+
+                            String transactionQuery = "SELECT * FROM transactions WHERE account_id = "
+                                    + accountId + ";";
+
+                            try (Statement transactionStmt = conn.createStatement();
+                                    ResultSet transRs = transactionStmt.executeQuery(transactionQuery)) {
+
+                                while (transRs.next()) {
+                                    long transactionId = transRs.getLong("transaction_id");
+                                    String transactionType = transRs.getString("transaction_type");
+                                    long amountInCents = (long) (transRs.getDouble("amount") * 100);
+                                    LocalDateTime createdAt = transRs.getTimestamp("created_at").toLocalDateTime();
+
+                                    LedgerTransaction transMemberOne = new LedgerTransaction(transactionId, accountId,
+                                            transactionType, amountInCents, createdAt);
+
+                                    System.out.println(transMemberOne);
+
+                                }
+
+                            }
 
                         }
 
