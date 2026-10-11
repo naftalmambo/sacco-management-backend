@@ -8,11 +8,11 @@ public class SaccoAccount {
     private String accountType;
     private long balanceInCents;
 
-    public SaccoAccount(String accountNumber, long memberId, String accountType) {
+    public SaccoAccount(String accountNumber, long memberId, String accountType, long balanceInCents) {
         this.accountNumber = accountNumber;
         this.memberId = memberId;
         this.accountType = accountType;
-        this.balanceInCents = 0;
+        this.balanceInCents = balanceInCents;
     }
 
     public String getAccountNumber() {
