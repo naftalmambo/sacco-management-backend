@@ -36,6 +36,25 @@ public class Main {
                             phoneNumber, nationalId, county);
                     System.out.println(memberOne);
 
+                    String accountQuery = "SELECT * FROM accounts WHERE member_id = 1;";
+
+                    try (Statement accStmt = conn.createStatement();
+                            ResultSet accRs = accStmt.executeQuery(accountQuery)) {
+
+                        while (accRs.next()) {
+                            String accountNumber = accRs.getString("account_number");
+                            long accmemberId = accRs.getLong("member_id");
+                            String accountType = accRs.getString("account_type");
+                            long balanceInCents = (long) (accRs.getDouble("balance") * 100);
+
+                            SaccoAccount accountOne = new SaccoAccount(accountNumber, accmemberId, accountType,
+                                    balanceInCents);
+                            System.out.println(accountOne);
+
+                        }
+
+                    }
+
                 }
 
             }
