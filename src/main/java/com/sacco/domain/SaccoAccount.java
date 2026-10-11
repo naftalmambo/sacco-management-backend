@@ -3,10 +3,16 @@ package com.sacco.domain;
 public class SaccoAccount {
 
     private String accountNumber;
-
     private long memberId;
     private String accountType;
     private long balanceInCents;
+
+    public SaccoAccount(String accountNumber, long memberId, String accountType) {
+        this.accountNumber = accountNumber;
+        this.memberId = memberId;
+        this.accountType = accountType;
+        this.balanceInCents = 0;
+    }
 
     public SaccoAccount(String accountNumber, long memberId, String accountType, long balanceInCents) {
         this.accountNumber = accountNumber;
