@@ -12,6 +12,18 @@ public class Loan {
     private LocalDateTime appliedAt;
     private LocalDateTime disbursedAt;
 
+    public Loan(long memberId, long principleAmountInCents, double interestRate) {
+        validateLoanData(principleAmountInCents, interestRate);
+        this.loanId = 0;
+        this.memberId = memberId;
+        this.principleAmountInCents = principleAmountInCents;
+        this.interestRate = interestRate;
+        this.interestOwedInCents = 0;
+        this.loanStatus = "INITIALIZED";
+        this.appliedAt = LocalDateTime.now();
+        this.disbursedAt = null;
+    }
+
     public Loan(long loanId, long memberId, long principleAmountInCents, double interestRate,
             long interestOwedInCents, String loanStatus, LocalDateTime appliedAt, LocalDateTime disbursedAt) {
         validateLoanData(principleAmountInCents, interestRate);
