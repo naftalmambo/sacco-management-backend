@@ -9,13 +9,14 @@ public class LedgerTransaction {
     private long amountInCents;
     private LocalDateTime createdAt;
 
-    public LedgerTransaction(long accountId, String transactionType, long amountInCents) {
+    public LedgerTransaction(long transactionId, long accountId, String transactionType, long amountInCents,
+            LocalDateTime createdAt) {
         validateTransaction(transactionType, amountInCents);
-        this.transactionId = 0;
+        this.transactionId = transactionId;
         this.accountId = accountId;
         this.transactionType = transactionType;
         this.amountInCents = amountInCents;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public long getTransactionId() {
