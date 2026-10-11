@@ -63,7 +63,7 @@ public class SaccoAccount {
     @Override
     public String toString() {
         long shillings = this.balanceInCents / 100;
-        long cents = this.balanceInCents % 100;
+        int cents = (int) this.balanceInCents % 100;
         return "Account Number: " + this.accountNumber + ", Member Id: " + this.memberId + ", Account Type: "
                 + this.accountType + ", Balance: " + shillings + "." + cents + " Kshs";
     }
