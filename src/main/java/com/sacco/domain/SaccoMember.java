@@ -14,6 +14,24 @@ public class SaccoMember {
     private String country;
     private String county;
 
+    public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex,
+            String emailAddress, String phoneNumber, String nationalId, String county) {
+        if (!(phoneNumber == null)) {
+            phoneNumber = phoneNumber.replace("+", "");
+        }
+        validateMemberData(dateOfBirth, nationalId, phoneNumber, emailAddress);
+        this.memberId = 0;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.sex = sex;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
+        this.nationalId = nationalId;
+        this.country = "Kenya";
+        this.county = county;
+    }
+
     public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress,
             String phoneNumber, String nationalId, String county) {
