@@ -14,13 +14,14 @@ public class SaccoMember {
     private String country;
     private String county;
 
-    public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex, String emailAddress,
+    public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
+            String emailAddress,
             String phoneNumber, String nationalId, String county) {
         if (!(phoneNumber == null)) {
             phoneNumber = phoneNumber.replace("+", "");
         }
         validateMemberData(dateOfBirth, nationalId, phoneNumber, emailAddress);
-        this.memberId = 0;
+        this.memberId = memberId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
