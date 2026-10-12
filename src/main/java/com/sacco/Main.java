@@ -16,6 +16,7 @@ public class Main {
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             System.out.println("SUCCESS: Direct SACCO Database Connection Established!");
 
+            // 1. Fetch Member Profile
             String query = "SELECT * FROM members WHERE member_id = 1;";
 
             try (Statement stmt = conn.createStatement();
@@ -33,10 +34,10 @@ public class Main {
                     String county = rs.getString("county");
 
                     SaccoMember memberOne = new SaccoMember(memberId, firstName, lastName, dateOfBirth, sex,
-                            emailAddress,
-                            phoneNumber, nationalId, county);
+                            emailAddress, phoneNumber, nationalId, county);
                     System.out.println(memberOne);
 
+                    // 2. Fetch all Accounts and their nested Transactions
                     String accountQuery = "SELECT * FROM accounts WHERE member_id = 1;";
 
                     try (Statement accStmt = conn.createStatement();
@@ -68,26 +69,56 @@ public class Main {
                                     LedgerTransaction transMemberOne = new LedgerTransaction(transactionId, accountId,
                                             transactionType, amountInCents, createdAt);
 
-                                    System.out.println(transMemberOne);
-
+                                    System.out.println("   └─ " + transMemberOne);
                                 }
-
                             }
-
                         }
-
                     }
 
-                }
+                    System.out.println("\n--- Fetching Member Credit Records ---");
+                    String loanQuery = "SELECT * FROM loans WHERE member_id = " + memberId + ";";
 
+                    try (Statement loanStmt = conn.createStatement();
+                            ResultSet loanRs = loanStmt.executeQuery(loanQuery)) {
+
+                        while (loanRs.next()) {
+                            long loanId = loanRs.getLong("loan_id");
+                            long loanMemberId = loanRs.getLong("member_id");
+
+                            double principalDecimal = loanRs.getDouble("principal_amount");
+                            long principleAmountInCents = (long) (principalDecimal * 100);
+
+                            double interestRate = loanRs.getDouble("interest_rate");
+                            long interestOwedInCents = loanRs.getLong("interest_owed");
+                            String loanStatus = loanRs.getString("loan_status");
+
+                            LocalDateTime appliedAt = loanRs.getTimestamp("applied_at").toLocalDateTime();
+
+                            LocalDateTime disbursedAt = null;
+                            Timestamp disbursedTimestamp = loanRs.getTimestamp("disbursed_at");
+                            if (disbursedTimestamp != null) {
+                                disbursedAt = disbursedTimestamp.toLocalDateTime();
+                            }
+
+                            Loan loanOne = new Loan(
+                                    loanId,
+                                    loanMemberId,
+                                    principleAmountInCents,
+                                    interestRate,
+                                    interestOwedInCents,
+                                    loanStatus,
+                                    appliedAt,
+                                    disbursedAt);
+
+                            System.out.println(loanOne);
+                        }
+                    }
+                }
             }
 
         } catch (SQLException e) {
             System.out.println("CRITICAL FAILURE: Database Connection Denied!");
             e.printStackTrace();
-
         }
-
     }
-
 }
