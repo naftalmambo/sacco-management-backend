@@ -13,6 +13,7 @@ public class SaccoMember {
     private String nationalId;
     private String country;
     private String county;
+    private LocalDate joinedDate;
 
     public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress, String phoneNumber, String nationalId, String county) {
@@ -34,7 +35,7 @@ public class SaccoMember {
 
     public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress,
-            String phoneNumber, String nationalId, String county) {
+            String phoneNumber, String nationalId, String county, LocalDate joinedDate) {
         if (!(phoneNumber == null)) {
             phoneNumber = phoneNumber.replace("+", "");
         }
@@ -49,6 +50,7 @@ public class SaccoMember {
         this.nationalId = nationalId;
         this.country = "Kenya";
         this.county = county;
+        this.joinedDate = joinedDate;
 
     }
 
@@ -93,6 +95,10 @@ public class SaccoMember {
         return this.county;
     }
 
+    public LocalDate getJoinedDate() {
+        return this.joinedDate;
+    }
+
     private void validateMemberData(LocalDate dateOfBirth, String nationalId, String phoneNumber, String emailAddress) {
         if (java.time.Period.between(dateOfBirth, LocalDate.now()).getYears() < 18) {
             throw new IllegalArgumentException("Member must be at least 18 years old to register.");
@@ -129,7 +135,8 @@ public class SaccoMember {
                 ", Name: " + this.firstName + " " + this.lastName +
                 ", Sex: " + this.sex +
                 ", Phone: " + this.phoneNumber +
-                ", Location: " + this.country + ", " + this.county + "]";
+                ", Location: " + this.country + ", " + this.county +
+                ", Joined: " + this.joinedDate + "]";
     }
 
 }
