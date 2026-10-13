@@ -32,9 +32,10 @@ public class Main {
                     String phoneNumber = rs.getString("phone_number");
                     String nationalId = rs.getString("national_id");
                     String county = rs.getString("county");
+                    LocalDate joinedDate = rs.getDate("joined_date").toLocalDate();
 
                     SaccoMember memberOne = new SaccoMember(memberId, firstName, lastName, dateOfBirth, sex,
-                            emailAddress, phoneNumber, nationalId, county);
+                            emailAddress, phoneNumber, nationalId, county, joinedDate);
                     System.out.println(memberOne);
 
                     // 2. Fetch all Accounts and their nested Transactions
