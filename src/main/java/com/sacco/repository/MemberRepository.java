@@ -1,3 +1,5 @@
+package com.sacco.repository;
+
 import com.sacco.domain.SaccoMember;
 import com.sacco.database.DatabaseManager;
 import java.sql.*;
