@@ -28,4 +28,62 @@ public class MemberRepository {
 
     }
 
+    public SaccoMember findByNationalId(String nationalId) {
+        String sql = "SELECT * FROM members WHERE national_id = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nationalId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new SaccoMember(
+                            rs.getLong("member_id"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            rs.getDate("date_of_birth").toLocalDate(),
+                            rs.getString("sex"),
+                            rs.getString("email_address"),
+                            rs.getString("phone_number"),
+                            rs.getString("national_id"),
+                            rs.getString("county"),
+                            rs.getDate("joined_date").toLocalDate());
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: Inside MemberRepository.findByNationalId: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public SaccoMember findById(long memberId) {
+        String sql = "SELECT * FROM members WHERE member_id = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, memberId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new SaccoMember(
+                            rs.getLong("member_id"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            rs.getDate("date_of_birth").toLocalDate(),
+                            rs.getString("sex"),
+                            rs.getString("email_address"),
+                            rs.getString("phone_number"),
+                            rs.getString("national_id"),
+                            rs.getString("county"),
+                            rs.getDate("joined_date").toLocalDate());
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: Inside MemberRepository.findById: " + e.getMessage());
+        }
+        return null;
+    }
+
 }
