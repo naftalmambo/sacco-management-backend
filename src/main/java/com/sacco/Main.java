@@ -38,7 +38,6 @@ public class Main {
                             emailAddress, phoneNumber, nationalId, county, joinedDate);
                     System.out.println(memberOne);
 
-                    // 2. Fetch all Accounts and their nested Transactions
                     String accountQuery = "SELECT * FROM accounts WHERE member_id = 1;";
 
                     try (Statement accStmt = conn.createStatement();
@@ -46,17 +45,27 @@ public class Main {
 
                         while (accRs.next()) {
                             long accountId = accRs.getLong("account_id");
-                            String accountNumber = accRs.getString("account_number");
                             long accmemberId = accRs.getLong("member_id");
+                            String accountNumber = accRs.getString("account_number");
                             String accountType = accRs.getString("account_type");
-                            long balanceInCents = (long) (accRs.getDouble("balance") * 100);
 
-                            SaccoAccount accountOne = new SaccoAccount(accountNumber, accmemberId, accountType,
-                                    balanceInCents);
+                            long balanceInCents = (long) (accRs.getDouble("balance") * 100);
+                            String accountStatus = accRs.getString("account_status");
+
+                            java.time.LocalDateTime createdAt = accRs.getTimestamp("created_at").toLocalDateTime();
+
+                            SaccoAccount accountOne = new SaccoAccount(
+                                    accountId,
+                                    accmemberId,
+                                    accountNumber,
+                                    accountType,
+                                    balanceInCents,
+                                    accountStatus,
+                                    createdAt);
                             System.out.println(accountOne);
 
-                            String transactionQuery = "SELECT * FROM transactions WHERE account_id = "
-                                    + accountId + ";";
+                            String transactionQuery = "SELECT * FROM transactions WHERE account_id = " + accountId
+                                    + ";";
 
                             try (Statement transactionStmt = conn.createStatement();
                                     ResultSet transRs = transactionStmt.executeQuery(transactionQuery)) {
@@ -65,10 +74,14 @@ public class Main {
                                     long transactionId = transRs.getLong("transaction_id");
                                     String transactionType = transRs.getString("transaction_type");
                                     long amountInCents = (long) (transRs.getDouble("amount") * 100);
-                                    LocalDateTime createdAt = transRs.getTimestamp("created_at").toLocalDateTime();
+                                    LocalDateTime transCreatedAt = transRs.getTimestamp("created_at").toLocalDateTime();
 
-                                    LedgerTransaction transMemberOne = new LedgerTransaction(transactionId, accountId,
-                                            transactionType, amountInCents, createdAt);
+                                    LedgerTransaction transMemberOne = new LedgerTransaction(
+                                            transactionId,
+                                            accountId,
+                                            transactionType,
+                                            amountInCents,
+                                            transCreatedAt);
 
                                     System.out.println("   └─ " + transMemberOne);
                                 }
