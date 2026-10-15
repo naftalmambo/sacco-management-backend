@@ -3,6 +3,7 @@ package com.sacco.repository;
 import com.sacco.domain.SaccoAccount;
 import com.sacco.database.DatabaseManager;
 import java.sql.*;
+import java.math.*;
 import java.util.ArrayList;
 
 public class AccountRepository {
@@ -27,4 +28,44 @@ public class AccountRepository {
         }
 
     }
+
+    public ArrayList<SaccoAccount> findAllByMemberId(long memberId) {
+        ArrayList<SaccoAccount> accountsList = new ArrayList<>();
+        String sql = "SELECT * FROM accounts WHERE member_id = ?;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, memberId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    BigDecimal dbNumeric = rs.getBigDecimal("balance");
+                    long balanceInCents = dbNumeric.movePointRight(2).longValue();
+
+                    SaccoAccount account = new SaccoAccount(
+
+                            rs.getLong("account_id"),
+                            rs.getLong("member_id"),
+                            rs.getString("account_number"),
+                            rs.getString("account_type"),
+                            balanceInCents,
+                            rs.getString("account_status"),
+                            rs.getTimestamp("created_at").toLocalDateTime());
+                    accountsList.add(account);
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println("Error: Check AccountRepository.findAllByMemberId: " + e.getMessage());
+        }
+
+        return accountsList;
+
+    }
+
 }
