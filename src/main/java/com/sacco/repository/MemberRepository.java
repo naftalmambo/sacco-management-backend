@@ -24,7 +24,7 @@ public class MemberRepository {
             stmt.executeUpdate();
             System.out.println("SUCCESS: New member written to disk!");
         } catch (SQLException e) {
-            System.out.println("ERROR: Inside MemberRepository.save: " + e.getMessage());
+            System.out.println("ERROR: Check MemberRepository.save: " + e.getMessage());
         }
 
     }
