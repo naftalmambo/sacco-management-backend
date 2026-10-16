@@ -1,5 +1,7 @@
 package com.sacco.domain;
 
+import java.time.LocalDateTime;
+
 import java.time.LocalDate;
 
 public class SaccoMember {
@@ -13,7 +15,7 @@ public class SaccoMember {
     private String nationalId;
     private String country;
     private String county;
-    private LocalDate joinedDate;
+    private LocalDateTime joinedDate;
 
     public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress, String phoneNumber, String nationalId, String county) {
@@ -35,7 +37,7 @@ public class SaccoMember {
 
     public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress,
-            String phoneNumber, String nationalId, String county, LocalDate joinedDate) {
+            String phoneNumber, String nationalId, String county, LocalDateTime joinedDate) {
         if (!(phoneNumber == null)) {
             phoneNumber = phoneNumber.replace("+", "");
         }
@@ -95,7 +97,7 @@ public class SaccoMember {
         return this.county;
     }
 
-    public LocalDate getJoinedDate() {
+    public LocalDateTime getJoinedDate() {
         return this.joinedDate;
     }
 
