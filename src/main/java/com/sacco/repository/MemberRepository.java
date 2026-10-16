@@ -49,7 +49,7 @@ public class MemberRepository {
                             rs.getString("phone_number"),
                             rs.getString("national_id"),
                             rs.getString("county"),
-                            rs.getDate("joined_date").toLocalDate());
+                            rs.getTimestamp("joined_date").toLocalDateTime());
                 }
             }
         } catch (SQLException e) {
@@ -78,7 +78,7 @@ public class MemberRepository {
                             rs.getString("phone_number"),
                             rs.getString("national_id"),
                             rs.getString("county"),
-                            rs.getDate("joined_date").toLocalDate());
+                            rs.getTimestamp("joined_date").toLocalDateTime());
                 }
             }
         } catch (SQLException e) {
