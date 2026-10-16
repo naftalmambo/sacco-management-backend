@@ -19,7 +19,12 @@ CREATE TABLE transactions (
     account_id bigint NOT NULL,
     loan_id BIGINT DEFAULT NULL,
     transaction_type VARCHAR(20) NOT NULL CONSTRAINT chk_trans_type CHECK (
-        transaction_type IN ('DEPOSIT', 'WITHDRAWAL', 'LOAN REPAYMENT')
+        transaction_type IN (
+            'DEPOSIT',
+            'WITHDRAWAL',
+            'LOAN REPAYMENT',
+            'LOAN DISBURSMENT'
+        )
     ),
     amount NUMERIC(15, 2) NOT NULL CONSTRAINT chk_trans_amount CHECK (amount > 0),
     currency VARCHAR(3) DEFAULT 'KES' NOT NULL CONSTRAINT chk_trans_currency CHECK (currency = 'KES'),
