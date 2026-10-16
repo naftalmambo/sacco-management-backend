@@ -32,7 +32,7 @@ public class Main {
                     String phoneNumber = rs.getString("phone_number");
                     String nationalId = rs.getString("national_id");
                     String county = rs.getString("county");
-                    LocalDate joinedDate = rs.getDate("joined_date").toLocalDate();
+                    LocalDateTime joinedDate = rs.getTimestamp("joined_date").toLocalDateTime();
 
                     SaccoMember memberOne = new SaccoMember(memberId, firstName, lastName, dateOfBirth, sex,
                             emailAddress, phoneNumber, nationalId, county, joinedDate);
