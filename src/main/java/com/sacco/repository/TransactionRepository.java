@@ -28,4 +28,42 @@ public class TransactionRepository {
         }
     }
 
+    public ArrayList<LedgerTransaction> findRecentByAccountId(long accountId) {
+        ArrayList<LedgerTransaction> transactionList = new ArrayList<>();
+
+        String sql = "SELECT * FROM transactions WHERE account_Id = ? ORDER BY created_at DESC LIMIT 10;";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, accountId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+
+                    BigDecimal dbNumeric = rs.getBigDecimal("amount");
+                    long amountInCents = dbNumeric.movePointRight(2).longValue();
+
+                    LedgerTransaction transaction = new LedgerTransaction(
+                            rs.getLong("transaction_id"),
+                            rs.getLong("account_id"),
+                            rs.getString("transaction_type"),
+                            amountInCents,
+                            rs.getTimestamp("created_at").toLocalDateTime()
+
+                    );
+                    transactionList.add(transaction);
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error: Check TransactionRepository.findRecentByAccountId: " + e.getMessage());
+
+        }
+        return transactionList;
+
+    }
+
 }
