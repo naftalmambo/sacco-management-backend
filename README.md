@@ -36,7 +36,7 @@ This backend system is actively being developed and scaled using a structured, m
 ```text
 ~/backend-projects/sacco-management-backend/
 ├── pom.xml                     # Maven project configuration file
-├── README.md                   # System documentation and project guide
+├── README.md                   # Project documentation
 ├── LICENSE                     # Open-source MIT License terms
 ├── hs_err_pid3842.log          # JVM crash error log
 ├── images/                     # Database layout and report screenshots
@@ -54,12 +54,12 @@ This backend system is actively being developed and scaled using a structured, m
 │   │   ├── Main.java           # Application entry point
 │   │   ├── database/           # Handles JDBC configurations and connections
 │   │   │   └── DatabaseManager.java
-│   │   ├── domain/             # Object-oriented core domain models
+│   │   ├── domain/             # Core domain models
 │   │   │   ├── LedgerTransaction.java
 │   │   │   ├── Loan.java
 │   │   │   ├── SaccoAccount.java
 │   │   │   └── SaccoMember.java
-│   │   └── repository/         # Native JDBC query mapping interfaces
+│   │   └── repository/         # Query mapping interfaces
 │   │       ├── AccountRepository.java
 │   │       ├── LoanRepository.java
 │   │       ├── MemberRepository.java
