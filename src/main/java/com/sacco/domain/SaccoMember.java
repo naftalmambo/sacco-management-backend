@@ -1,7 +1,6 @@
 package com.sacco.domain;
 
 import java.time.LocalDateTime;
-
 import java.time.LocalDate;
 
 public class SaccoMember {
@@ -19,29 +18,32 @@ public class SaccoMember {
 
     public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress, String phoneNumber, String nationalId, String county) {
-        if (!(phoneNumber == null)) {
-            phoneNumber = phoneNumber.replace("+", "");
-        }
-        validateMemberData(dateOfBirth, nationalId, phoneNumber, emailAddress);
+
+        String kenyanNumber = "+254" + phoneNumber;
+
+        validateMemberData(dateOfBirth, nationalId, kenyanNumber, emailAddress);
+
         this.memberId = 0;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.sex = sex;
         this.emailAddress = emailAddress;
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = kenyanNumber; // Saves as +254XXXXXXXXX on db
         this.nationalId = nationalId;
         this.country = "Kenya";
         this.county = county;
     }
 
     public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
-            String emailAddress,
-            String phoneNumber, String nationalId, String county, LocalDateTime joinedDate) {
-        if (!(phoneNumber == null)) {
-            phoneNumber = phoneNumber.replace("+", "");
+            String emailAddress, String phoneNumber, String nationalId, String county, LocalDateTime joinedDate) {
+
+        if (phoneNumber != null && !phoneNumber.startsWith("+")) {
+            phoneNumber = "+" + phoneNumber;
         }
+
         validateMemberData(dateOfBirth, nationalId, phoneNumber, emailAddress);
+
         this.memberId = memberId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -53,7 +55,6 @@ public class SaccoMember {
         this.country = "Kenya";
         this.county = county;
         this.joinedDate = joinedDate;
-
     }
 
     public long getMemberId() {
@@ -90,7 +91,6 @@ public class SaccoMember {
 
     public String getCountry() {
         return this.country;
-
     }
 
     public String getCounty() {
@@ -118,12 +118,8 @@ public class SaccoMember {
             throw new IllegalArgumentException("Invalid Kenyan National ID length");
         }
 
-        if (phoneNumber == null || !(phoneNumber.matches("[0-9]+"))) {
-            throw new IllegalArgumentException("Phone number must contain numbers only");
-        }
-
-        if (!(phoneNumber.length() == 10) && !(phoneNumber.length() == 12)) {
-            throw new IllegalArgumentException("Invalid Kenyan phone number length");
+        if (phoneNumber == null || !phoneNumber.matches("^\\+254\\d{9}$")) {
+            throw new IllegalArgumentException("Phone number must contain exactly 9 digits after the +254 prefix.");
         }
 
         if (emailAddress == null || !(emailAddress.contains(".")) || !(emailAddress.contains("@"))) {
@@ -140,5 +136,4 @@ public class SaccoMember {
                 ", Location: " + this.country + ", " + this.county +
                 ", Joined: " + this.joinedDate + "]";
     }
-
 }
