@@ -22,7 +22,7 @@ CREATE TABLE loans (
     member_id bigint NOT NULL,
     principal_amount NUMERIC(15, 2) NOT NULL CONSTRAINT chk_princ_amt CHECK (principal_amount > 0),
     interest_rate NUMERIC(15, 2) NOT NULL CONSTRAINT chk_interest_rt CHECK (interest_rate > 0),
-    interest_owed BIGINT DEFAULT 0 NOT NULL,
+    interest_owed NUMERIC(15, 2) DEFAULT 0 NOT NULL,
     loan_status TEXT DEFAULT 'PENDING APPROVAL' NOT NULL CONSTRAINT chk_loan_status CHECK (
         loan_status IN (
             'PENDING APPROVAL',
