@@ -50,7 +50,8 @@ public class LoanRepository {
 
                     double interestRate = rs.getDouble("interest_rate");
 
-                    long interestOwedInCents = rs.getLong("interest_owed");
+                    BigDecimal dbInterestOwed = rs.getBigDecimal("interest_owed");
+                    long interestOwedInCents = dbInterestOwed.movePointRight(2).longValue();
 
                     java.time.LocalDateTime appliedAt = rs.getTimestamp("applied_at").toLocalDateTime();
 
