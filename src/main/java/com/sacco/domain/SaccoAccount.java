@@ -16,7 +16,7 @@ public class SaccoAccount {
         this.accountId = 0;
         this.memberId = memberId;
         this.accountNumber = accountNumber;
-        this.accountType = accountType;
+        this.accountType = accountType != null ? accountType.toUpperCase() : "";
         this.balanceInCents = 0;
         this.accountStatus = "ACTIVE";
         this.createdAt = LocalDateTime.now();
@@ -27,7 +27,7 @@ public class SaccoAccount {
         this.accountId = accountId;
         this.memberId = memberId;
         this.accountNumber = accountNumber;
-        this.accountType = accountType;
+        this.accountType = accountType != null ? accountType.toUpperCase() : "";
         this.balanceInCents = balanceInCents;
         this.accountStatus = accountStatus;
         this.createdAt = createdAt;
