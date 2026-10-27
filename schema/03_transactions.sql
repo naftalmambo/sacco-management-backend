@@ -23,7 +23,7 @@ CREATE TABLE transactions (
             'DEPOSIT',
             'WITHDRAWAL',
             'LOAN REPAYMENT',
-            'LOAN DISBURSMENT'
+            'LOAN DISBURSEMENT'
         )
     ),
     amount NUMERIC(15, 2) NOT NULL CONSTRAINT chk_trans_amount CHECK (amount > 0),
