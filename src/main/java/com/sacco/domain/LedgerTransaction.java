@@ -50,7 +50,7 @@ public class LedgerTransaction {
 
     private void validateTransaction(String transactionType, long amountInCents) {
         if (!(transactionType.equals("DEPOSIT")) && !(transactionType.equals("WITHDRAWAL"))
-                && !(transactionType.equals("LOAN REPAYMENT"))) {
+                && !(transactionType.equals("LOAN REPAYMENT")) && !(transactionType.equals("LOAN DISBURSEMENT"))) {
             throw new IllegalArgumentException("Invalid Transaction Type");
         }
 
