@@ -11,12 +11,7 @@ public class SaccoEngineService {
     private final TransactionRepository transactionRepo = new TransactionRepository();
     private final LoanRepository loanRepo = new LoanRepository();
 
-    /**
-     * Orchestrates the complete member profile audit workflow.
-     * Pulls data sequentially across multiple tables safely.
-     */
     public void runMemberAuditReport(long memberId) {
-        // Step 1: Verify member identity first
         SaccoMember member = memberRepo.findById(memberId);
 
         if (member == null) {
@@ -24,11 +19,9 @@ public class SaccoEngineService {
             return;
         }
 
-        // Print verified member identity header using the domain blueprint's toString()
         System.out.println("\n[MEMBER IDENTITY DUMP]");
         System.out.println(member);
 
-        // Step 2: Fetch and loop through financial account profiles
         System.out.println("\n[FINANCIAL ACCOUNT MANAGEMENT SYSTEM]");
         ArrayList<SaccoAccount> activeAccounts = accountRepo.findAllByMemberId(memberId);
 
@@ -38,7 +31,6 @@ public class SaccoEngineService {
             for (SaccoAccount account : activeAccounts) {
                 System.out.println(account);
 
-                // Step 3: Fetch and log the 10 most recent ledger entries for this account
                 ArrayList<LedgerTransaction> recentLedgerEntries = transactionRepo
                         .findRecentByAccountId(account.getAccountId());
                 for (LedgerTransaction entry : recentLedgerEntries) {
@@ -47,7 +39,6 @@ public class SaccoEngineService {
             }
         }
 
-        // Step 4: Fetch and analyze credit registry profiles
         System.out.println("\n[CREDIT REGISTRY ANALYSIS]");
         ArrayList<Loan> memberLoans = loanRepo.findAllByMemberId(memberId);
 
