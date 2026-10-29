@@ -66,4 +66,30 @@ public class TransactionRepository {
 
     }
 
+    public void insertTransaction(Connection conn, long accountId, Long loanId, String transactionType,
+            long amountInCents, String currency) throws SQLException {
+        String sql = "INSERT INTO transactions (account_id, loan_id, transaction_type, amount, currency) VALUES (?, ?, ?, ?, ?);";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, accountId);
+
+            if (loanId == null) {
+                stmt.setNull(2, Types.BIGINT);
+            } else {
+                stmt.setLong(2, loanId);
+            }
+
+            stmt.setString(3, transactionType);
+
+            java.math.BigDecimal databaseDecimal = java.math.BigDecimal.valueOf(amountInCents, 2);
+            stmt.setBigDecimal(4, databaseDecimal);
+
+            stmt.setString(5, currency);
+
+            stmt.executeUpdate();
+            System.out.println("SUCCESS: Ledger transaction staged in database");
+        }
+    }
+
 }
