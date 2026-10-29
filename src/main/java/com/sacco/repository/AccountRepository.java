@@ -68,4 +68,21 @@ public class AccountRepository {
 
     }
 
+    public void updateBalance(Connection conn, long accountId, long newBalanceInCents) throws SQLException {
+        String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            java.math.BigDecimal databaseDecimal = java.math.BigDecimal.valueOf(newBalanceInCents, 2);
+            stmt.setBigDecimal(1, databaseDecimal);
+            stmt.setLong(2, accountId);
+
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new SQLException(
+                        "Account modification failed. Target Account ID " + accountId + " not found on disk.");
+            }
+        }
+    }
+
 }
