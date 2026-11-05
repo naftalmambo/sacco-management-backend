@@ -85,4 +85,54 @@ public class AccountRepository {
         }
     }
 
+    public SaccoAccount findSavingsAccountByMemberId(Connection conn, long memberId) throws SQLException {
+        String sql = "SELECT * FROM accounts WHERE member_id = ? AND account_type = 'SAVINGS' AND account_status = 'ACTIVE';";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, memberId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    java.math.BigDecimal dbNumeric = rs.getBigDecimal("balance");
+                    long balanceInCents = dbNumeric.movePointRight(2).longValue();
+
+                    return new SaccoAccount(
+                            rs.getLong("account_id"),
+                            rs.getLong("member_id"),
+                            rs.getString("account_number"),
+                            rs.getString("account_type"),
+                            balanceInCents,
+                            rs.getString("account_status"),
+                            rs.getTimestamp("created_at").toLocalDateTime());
+                }
+            }
+        }
+        return null;
+    }
+
+    public SaccoAccount findLoanAccountByMemberId(Connection conn, long memberId) throws SQLException {
+        String sql = "SELECT * FROM accounts WHERE member_id = ? AND account_type = 'LOAN' AND account_status = 'ACTIVE';";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, memberId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    java.math.BigDecimal dbNumeric = rs.getBigDecimal("balance");
+                    long balanceInCents = dbNumeric.movePointRight(2).longValue();
+
+                    return new SaccoAccount(
+                            rs.getLong("account_id"),
+                            rs.getLong("member_id"),
+                            rs.getString("account_number"),
+                            rs.getString("account_type"),
+                            balanceInCents,
+                            rs.getString("account_status"),
+                            rs.getTimestamp("created_at").toLocalDateTime());
+                }
+            }
+        }
+        return null;
+    }
+
 }
