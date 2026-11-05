@@ -164,19 +164,16 @@ public class SaccoEngineService {
                     }
                 }
 
-                // 1. Structural Identity Guard
                 if (account == null) {
                     throw new SQLException(
                             "Security Alert: Target Account ID " + accountId + " does not exist on disk.");
                 }
 
-                // 2. Strict Account Type Rule Enforcement
                 if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())) {
                     throw new SQLException(
                             "Transaction Violation: Counter cash deposits are strictly restricted to SAVINGS accounts.");
                 }
 
-                // 3. Operational Integrity Status Gate
                 if (!"ACTIVE".equalsIgnoreCase(account.getAccountStatus())) {
                     throw new SQLException(
                             "Account Deactivated: Transaction blocked. Target account status is: "
@@ -204,4 +201,92 @@ public class SaccoEngineService {
             System.out.println("Critical System Database Drop Exception: " + e.getMessage());
         }
     }
+
+    public void processLoanDisbursement(long loanId) {
+        try (Connection conn = com.sacco.database.DatabaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                Loan loan = null;
+                String lookupLoanSql = "SELECT * FROM loans WHERE loan_id = ?;";
+
+                try (PreparedStatement stmt = conn.prepareStatement(lookupLoanSql)) {
+                    stmt.setLong(1, loanId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            java.math.BigDecimal dbPrincipal = rs.getBigDecimal("principal_amount");
+                            long principalInCents = dbPrincipal.movePointRight(2).longValue();
+                            java.math.BigDecimal dbInterest = rs.getBigDecimal("interest_owed");
+                            long interestOwedInCents = dbInterest.movePointRight(2).longValue();
+
+                            loan = new Loan(
+                                    rs.getLong("loan_id"),
+                                    rs.getLong("member_id"),
+                                    principalInCents,
+                                    rs.getDouble("interest_rate"),
+                                    interestOwedInCents,
+                                    rs.getString("loan_status"),
+                                    rs.getTimestamp("applied_at").toLocalDateTime(),
+                                    rs.getTimestamp("disbursed_at") != null
+                                            ? rs.getTimestamp("disbursed_at").toLocalDateTime()
+                                            : null);
+                        }
+                    }
+                }
+
+                if (loan == null) {
+                    throw new SQLException("Credit Error: Loan record with ID " + loanId + " does not exist.");
+                }
+
+                if (!"PENDING APPROVAL".equalsIgnoreCase(loan.getLoanStatus())) {
+                    throw new SQLException("Transaction Aborted: Only PENDING APPROVAL facilities can be disbursed.");
+                }
+
+                long memberId = loan.getMemberId();
+
+                SaccoAccount savingsAccount = accountRepo.findSavingsAccountByMemberId(conn, memberId);
+                SaccoAccount loanAccount = accountRepo.findLoanAccountByMemberId(conn, memberId);
+
+                if (savingsAccount == null) {
+                    throw new SQLException("Disbursement Failure: Active SAVINGS account tracking record missing.");
+                }
+                if (loanAccount == null) {
+                    throw new SQLException("Disbursement Failure: Active LOAN balance sheet account missing.");
+                }
+
+                loan.disburseLoan();
+                long principalAmount = loan.getPrincipleAmountInCents();
+                long newSavingsBalance = savingsAccount.getBalanceInCents() + principalAmount;
+                long newLoanAccountBalance = loanAccount.getBalanceInCents() + principalAmount;
+
+                String updateLoanSql = "UPDATE loans SET loan_status = 'ACTIVE', interest_owed = ?, disbursed_at = CURRENT_TIMESTAMP WHERE loan_id = ?;";
+                try (PreparedStatement stmt = conn.prepareStatement(updateLoanSql)) {
+                    stmt.setBigDecimal(1, java.math.BigDecimal.valueOf(loan.getInterestOwedInCents(), 2));
+                    stmt.setLong(2, loanId);
+                    stmt.executeUpdate();
+                }
+
+                accountRepo.updateBalance(conn, savingsAccount.getAccountId(), newSavingsBalance);
+                accountRepo.updateBalance(conn, loanAccount.getAccountId(), newLoanAccountBalance);
+
+                transactionRepo.insertTransaction(conn, loanAccount.getAccountId(), loanId, "LOAN_DISBURSEMENT",
+                        principalAmount, "KES");
+                transactionRepo.insertTransaction(conn, savingsAccount.getAccountId(), loanId, "DEPOSIT",
+                        principalAmount, "KES");
+
+                conn.commit();
+                System.out.println("LOAN FACILITY ONLINE: " + (principalAmount / 100.0)
+                        + " KSh disbursed directly to Savings Account No: " + savingsAccount.getAccountNumber());
+
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("🚨 CREDIT TRANSACTION ROLLBACK TRIGGERED: " + e.getMessage());
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            System.out.println("Critical Credit Engine Core Crash Exception: " + e.getMessage());
+        }
+    }
+
 }
