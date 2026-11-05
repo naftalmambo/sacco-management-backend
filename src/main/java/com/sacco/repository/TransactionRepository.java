@@ -31,7 +31,7 @@ public class TransactionRepository {
     public ArrayList<LedgerTransaction> findRecentByAccountId(long accountId) {
         ArrayList<LedgerTransaction> transactionList = new ArrayList<>();
 
-        String sql = "SELECT * FROM transactions WHERE account_Id = ? ORDER BY created_at DESC LIMIT 10;";
+        String sql = "SELECT * FROM transactions WHERE account_id = ? ORDER BY created_at DESC LIMIT 10;";
 
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
