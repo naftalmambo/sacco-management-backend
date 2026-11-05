@@ -25,6 +25,9 @@ public class Main {
         System.out.println("\n[EXECUTE RUN E: Testing Deposit Account Type Firewall]");
         saccoService.processCashDeposit(1L, 500000L);
 
+        System.out.println("\n[EXECUTE RUN F: Testing Enterprise Credit Amortization & Disbursement]");
+        saccoService.processLoanDisbursement(1L);
+
         System.out.println("\n=================================================");
         System.out.println("=== 📊 FINAL LEDGER STATE VERIFICATION AUDIT ===");
         System.out.println("=================================================");
