@@ -131,4 +131,77 @@ public class SaccoEngineService {
         }
     }
 
+    public void processCashDeposit(long accountId, long amountInCents) {
+        if (amountInCents <= 0) {
+            System.out.println("TRANSACTION BLOCKED: Deposit amount must be greater than zero.");
+            return;
+        }
+
+        try (Connection conn = com.sacco.database.DatabaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                SaccoAccount account = null;
+                String lookupSql = "SELECT * FROM accounts WHERE account_id = ?;";
+
+                try (PreparedStatement stmt = conn.prepareStatement(lookupSql)) {
+                    stmt.setLong(1, accountId);
+
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            java.math.BigDecimal dbNumeric = rs.getBigDecimal("balance");
+                            long balanceInCents = dbNumeric.movePointRight(2).longValue();
+
+                            account = new SaccoAccount(
+                                    rs.getLong("account_id"),
+                                    rs.getLong("member_id"),
+                                    rs.getString("account_number"),
+                                    rs.getString("account_type"),
+                                    balanceInCents,
+                                    rs.getString("account_status"),
+                                    rs.getTimestamp("created_at").toLocalDateTime());
+                        }
+                    }
+                }
+
+                // 1. Structural Identity Guard
+                if (account == null) {
+                    throw new SQLException(
+                            "Security Alert: Target Account ID " + accountId + " does not exist on disk.");
+                }
+
+                // 2. Strict Account Type Rule Enforcement
+                if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())) {
+                    throw new SQLException(
+                            "Transaction Violation: Counter cash deposits are strictly restricted to SAVINGS accounts.");
+                }
+
+                // 3. Operational Integrity Status Gate
+                if (!"ACTIVE".equalsIgnoreCase(account.getAccountStatus())) {
+                    throw new SQLException(
+                            "Account Deactivated: Transaction blocked. Target account status is: "
+                                    + account.getAccountStatus());
+                }
+
+                long currentBalance = account.getBalanceInCents();
+                long newBalance = currentBalance + amountInCents;
+
+                accountRepo.updateBalance(conn, accountId, newBalance);
+                transactionRepo.insertTransaction(conn, accountId, null, "DEPOSIT", amountInCents, "KES");
+
+                conn.commit();
+                System.out.println("TRANSACTION SUCCESSFUL: " + (amountInCents / 100.0)
+                        + " KSh deposited to Account ID " + accountId);
+
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("🚨 EMERGENCY ROLLBACK TRIGGERED: " + e.getMessage());
+            } finally {
+                conn.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Critical System Database Drop Exception: " + e.getMessage());
+        }
+    }
 }
