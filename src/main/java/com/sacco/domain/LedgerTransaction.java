@@ -49,9 +49,13 @@ public class LedgerTransaction {
     }
 
     private void validateTransaction(String transactionType, long amountInCents) {
-        if (!(transactionType.equals("DEPOSIT")) && !(transactionType.equals("WITHDRAWAL"))
-                && !(transactionType.equals("LOAN REPAYMENT")) && !(transactionType.equals("LOAN_DISBURSEMENT"))) {
-            throw new IllegalArgumentException("Invalid Transaction Type");
+        if (!(transactionType.equals("DEPOSIT")) &&
+                !(transactionType.equals("WITHDRAWAL")) &&
+                !(transactionType.equals("LOAN_REPAYMENT")) &&
+                !(transactionType.equals("LOAN REPAYMENT")) &&
+                !(transactionType.equals("LOAN_DISBURSEMENT")) &&
+                !(transactionType.equals("LOAN DISBURSEMENT"))) {
+            throw new IllegalArgumentException("Invalid Transaction Type: " + transactionType);
         }
 
         if (amountInCents <= 0) {
@@ -67,6 +71,5 @@ public class LedgerTransaction {
         return "Transaction [ID: " + this.transactionId + " | Account ID: " + this.accountId + " | Type: "
                 + this.transactionType + " | Amount: " + shillings + "." + cents + " KSh | Date: " + this.createdAt
                 + "]";
-
     }
 }
