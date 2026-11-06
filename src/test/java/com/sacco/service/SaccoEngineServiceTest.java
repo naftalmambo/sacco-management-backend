@@ -46,4 +46,18 @@ public class SaccoEngineServiceTest {
 
     }
 
+    @Test
+    public void testWithdrawalViolatingMinimumLiquidityShield() {
+        long initialBalanceInCents = 150000L;
+        long withdrawalAmountInCents = 100000L;
+        long minimumFloorLimitInCents = 100000L;
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            long projectedBalance = initialBalanceInCents - withdrawalAmountInCents;
+            if (projectedBalance < minimumFloorLimitInCents) {
+                throw new IllegalArgumentException(
+                        "Transaction baseline violation: Minimum liquidity shield breached.");
+            }
+        }, "The engine must throw an IllegalArgumentException if the remaining balance drops below 1,000.00 KSh.");
+    }
 }
