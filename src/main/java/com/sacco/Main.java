@@ -7,7 +7,6 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== 🏦 CORE BANKING LEDGER INTEGRATION TEST RUN ===");
 
-        // 1. Initialize our service layer coordinator
         SaccoEngineService saccoService = new SaccoEngineService();
 
         System.out.println("\n[EXECUTE RUN A: Testing Safe Savings Withdrawal]");
@@ -27,6 +26,9 @@ public class Main {
 
         System.out.println("\n[EXECUTE RUN F: Testing Enterprise Credit Amortization & Disbursement]");
         saccoService.processLoanDisbursement(1L);
+
+        System.out.println("\n[EXECUTE RUN G: Testing Enterprise Credit Interest-First Repayment Split]");
+        saccoService.processLoanRepayment(1L, 500000L, false);
 
         System.out.println("\n=================================================");
         System.out.println("=== 📊 FINAL LEDGER STATE VERIFICATION AUDIT ===");
