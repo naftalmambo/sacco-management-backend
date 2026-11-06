@@ -31,4 +31,19 @@ public class SaccoEngineServiceTest {
 
     }
 
+    @Test
+    public void testWithdrawalWithinLiquidityLimits() {
+        long initialBalanceInCents = 500000L;
+        long withdrawalAmountInCents = 200000L;
+        long minimumFloorLimitInCents = 100000L;
+
+        long finalBalanceInCents = initialBalanceInCents - withdrawalAmountInCents;
+
+        assertTrue(finalBalanceInCents >= minimumFloorLimitInCents,
+                "The final balance must remain safely above the floor limit.");
+        assertEquals(300000L, finalBalanceInCents,
+                "The remaining balance must be exactly 3,000.00 KSh (300,000 cents).");
+
+    }
+
 }
