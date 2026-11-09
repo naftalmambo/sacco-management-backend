@@ -8,17 +8,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SaccoEngineService {
 
-    private final MemberRepository memberRepo = new MemberRepository();
-    private final AccountRepository accountRepo = new AccountRepository();
-    private final TransactionRepository transactionRepo = new TransactionRepository();
-    private final LoanRepository loanRepo = new LoanRepository();
+    private MemberRepository memberRepo;
+    private AccountRepository accountRepo;
+    private TransactionRepository transactionRepo;
+    private LoanRepository loanRepo;
+
+    public SaccoEngineService() {
+        this.memberRepo = null;
+        this.accountRepo = null;
+        this.loanRepo = null;
+        this.transactionRepo = null;
+    }
 
     public void runMemberAuditReport(long memberId) {
-        SaccoMember member = memberRepo.findById(memberId);
-
+        SaccoMember member = (memberRepo != null) ? memberRepo.findById(memberId).orElse(null) : null;
         if (member == null) {
             System.out.println("CRITICAL ERROR: Member record with ID " + memberId + " missing from disk.");
             return;
@@ -28,7 +35,8 @@ public class SaccoEngineService {
         System.out.println(member);
 
         System.out.println("\n[FINANCIAL ACCOUNT MANAGEMENT SYSTEM]");
-        ArrayList<SaccoAccount> activeAccounts = accountRepo.findAllByMemberId(memberId);
+        List<SaccoAccount> activeAccounts = (accountRepo != null) ? accountRepo.findAllByMemberId(memberId)
+                : new ArrayList<>();
 
         if (activeAccounts.isEmpty()) {
             System.out.println("No active financial accounts registered for this member.");
@@ -36,8 +44,10 @@ public class SaccoEngineService {
             for (SaccoAccount account : activeAccounts) {
                 System.out.println(account);
 
-                ArrayList<LedgerTransaction> recentLedgerEntries = transactionRepo
-                        .findRecentByAccountId(account.getAccountId());
+                List<LedgerTransaction> recentLedgerEntries = (transactionRepo != null)
+                        ? transactionRepo.findTop10ByAccountIdOrderByCreatedAtDesc(account.getAccountId())
+                        : new java.util.ArrayList<>();
+
                 for (LedgerTransaction entry : recentLedgerEntries) {
                     System.out.println("   └─ " + entry);
                 }
@@ -45,7 +55,7 @@ public class SaccoEngineService {
         }
 
         System.out.println("\n[CREDIT REGISTRY ANALYSIS]");
-        ArrayList<Loan> memberLoans = loanRepo.findAllByMemberId(memberId);
+        List<Loan> memberLoans = (loanRepo != null) ? loanRepo.findAllByMemberId(memberId) : new ArrayList<>();
 
         if (memberLoans.isEmpty()) {
             System.out.println("No credit facility logs found for this member.");
@@ -111,7 +121,11 @@ public class SaccoEngineService {
 
                 accountRepo.updateBalance(conn, accountId, newBalance);
 
-                transactionRepo.insertTransaction(conn, accountId, null, "WITHDRAWAL", amountInCents, "KES");
+                if (transactionRepo != null) {
+
+                    LedgerTransaction tx = new LedgerTransaction(accountId, "WITHDRAWAL", amountInCents);
+                    transactionRepo.save(tx);
+                }
 
                 conn.commit();
                 System.out.println("TRANSACTION SUCCESSFUL: " + (amountInCents / 100.0)
@@ -184,7 +198,11 @@ public class SaccoEngineService {
                 long newBalance = currentBalance + amountInCents;
 
                 accountRepo.updateBalance(conn, accountId, newBalance);
-                transactionRepo.insertTransaction(conn, accountId, null, "DEPOSIT", amountInCents, "KES");
+                if (transactionRepo != null) {
+
+                    LedgerTransaction tx = new LedgerTransaction(accountId, "DEPOSIT", amountInCents);
+                    transactionRepo.save(tx);
+                }
 
                 conn.commit();
                 System.out.println("TRANSACTION SUCCESSFUL: " + (amountInCents / 100.0)
@@ -269,10 +287,15 @@ public class SaccoEngineService {
                 accountRepo.updateBalance(conn, savingsAccount.getAccountId(), newSavingsBalance);
                 accountRepo.updateBalance(conn, loanAccount.getAccountId(), newLoanAccountBalance);
 
-                transactionRepo.insertTransaction(conn, loanAccount.getAccountId(), loanId, "LOAN_DISBURSEMENT",
-                        principalAmount, "KES");
-                transactionRepo.insertTransaction(conn, savingsAccount.getAccountId(), loanId, "DEPOSIT",
-                        principalAmount, "KES");
+                if (transactionRepo != null) {
+                    LedgerTransaction loanTx = new LedgerTransaction(loanAccount.getAccountId(), "LOAN_DISBURSEMENT",
+                            principalAmount);
+                    transactionRepo.save(loanTx);
+
+                    LedgerTransaction savingsTx = new LedgerTransaction(savingsAccount.getAccountId(), "DEPOSIT",
+                            principalAmount);
+                    transactionRepo.save(savingsTx);
+                }
 
                 conn.commit();
                 System.out.println("LOAN FACILITY ONLINE: " + (principalAmount / 100.0)
@@ -393,13 +416,16 @@ public class SaccoEngineService {
 
                 long newLoanAccountBalance = loanAccount.getBalanceInCents() - amountInCents;
                 accountRepo.updateBalance(conn, loanAccount.getAccountId(), newLoanAccountBalance);
-                transactionRepo.insertTransaction(conn, loanAccount.getAccountId(), loanId, "LOAN_REPAYMENT",
-                        amountInCents, "KES");
+                if (transactionRepo != null) {
+                    LedgerTransaction loanRepayTx = new LedgerTransaction(loanAccount.getAccountId(), "LOAN_REPAYMENT",
+                            amountInCents);
+                    transactionRepo.save(loanRepayTx);
+                }
 
-                if (!isCashPayment) {
-
-                    transactionRepo.insertTransaction(conn, savingsAccount.getAccountId(), loanId, "WITHDRAWAL",
-                            amountInCents, "KES");
+                if (!isCashPayment && transactionRepo != null) {
+                    LedgerTransaction savingsWithdrawTx = new LedgerTransaction(savingsAccount.getAccountId(),
+                            "WITHDRAWAL", amountInCents);
+                    transactionRepo.save(savingsWithdrawTx);
                 }
 
                 conn.commit();
@@ -412,9 +438,10 @@ public class SaccoEngineService {
             } finally {
                 conn.setAutoCommit(true);
             }
-        } catch (SQLException e) {
+        } catch (
+
+        SQLException e) {
             System.out.println("Critical Credit Engine Core Repayment Exception: " + e.getMessage());
         }
     }
-
 }
