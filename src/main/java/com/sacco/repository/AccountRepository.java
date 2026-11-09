@@ -1,74 +1,21 @@
 package com.sacco.repository;
 
 import com.sacco.domain.SaccoAccount;
-import com.sacco.database.DatabaseManager;
-import java.sql.*;
-import java.math.*;
-import java.util.ArrayList;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public class AccountRepository {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
-    public void save(SaccoAccount NewAccount) {
+public interface AccountRepository extends JpaRepository<SaccoAccount, Long> {
+    List<SaccoAccount> findAllByMemberId(Long memberId);
 
-        String sql = "INSERT INTO accounts (member_id, account_number, account_type, balance) VALUES (?, ?, ?, ?);";
+    Optional<SaccoAccount> findByMemberIdAndAccountType(Long memberId, String accountType);
 
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setLong(1, NewAccount.getMemberId());
-            stmt.setString(2, NewAccount.getAccountNumber());
-            stmt.setString(3, NewAccount.getAccountType());
-            java.math.BigDecimal databaseDecimal = java.math.BigDecimal.valueOf(NewAccount.getBalanceInCents(), 2);
-            stmt.setBigDecimal(4, databaseDecimal);
-            stmt.executeUpdate();
-            System.out.println("SUCCESS: New account written to disk!");
-
-        } catch (SQLException e) {
-            System.out.println("Error: Check AccountRepository.save: " + e.getMessage());
-
-        }
-
-    }
-
-    public ArrayList<SaccoAccount> findAllByMemberId(long memberId) {
-        ArrayList<SaccoAccount> accountsList = new ArrayList<>();
-        String sql = "SELECT * FROM accounts WHERE member_id = ?;";
-
-        try (Connection conn = DatabaseManager.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setLong(1, memberId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    BigDecimal dbNumeric = rs.getBigDecimal("balance");
-                    long balanceInCents = dbNumeric.movePointRight(2).longValue();
-
-                    SaccoAccount account = new SaccoAccount(
-
-                            rs.getLong("account_id"),
-                            rs.getLong("member_id"),
-                            rs.getString("account_number"),
-                            rs.getString("account_type"),
-                            balanceInCents,
-                            rs.getString("account_status"),
-                            rs.getTimestamp("created_at").toLocalDateTime());
-                    accountsList.add(account);
-
-                }
-
-            }
-
-        } catch (SQLException e) {
-
-            System.out.println("Error: Check AccountRepository.findAllByMemberId: " + e.getMessage());
-        }
-
-        return accountsList;
-
-    }
-
-    public void updateBalance(Connection conn, long accountId, long newBalanceInCents) throws SQLException {
+    default void updateBalance(Connection conn, long accountId, long newBalanceInCents) throws SQLException {
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -85,7 +32,7 @@ public class AccountRepository {
         }
     }
 
-    public SaccoAccount findSavingsAccountByMemberId(Connection conn, long memberId) throws SQLException {
+    default SaccoAccount findSavingsAccountByMemberId(Connection conn, long memberId) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE member_id = ? AND account_type = 'SAVINGS' AND account_status = 'ACTIVE';";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -110,7 +57,7 @@ public class AccountRepository {
         return null;
     }
 
-    public SaccoAccount findLoanAccountByMemberId(Connection conn, long memberId) throws SQLException {
+    default SaccoAccount findLoanAccountByMemberId(Connection conn, long memberId) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE member_id = ? AND account_type = 'LOAN' AND account_status = 'ACTIVE';";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
