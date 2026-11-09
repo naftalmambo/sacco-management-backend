@@ -1,9 +1,18 @@
 package com.sacco.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "members")
+
 public class SaccoMember {
+    @Id
+
     private long memberId;
     private String firstName;
     private String lastName;
@@ -15,6 +24,9 @@ public class SaccoMember {
     private String country;
     private String county;
     private LocalDateTime joinedDate;
+
+    protected SaccoMember() {
+    }
 
     public SaccoMember(String firstName, String lastName, LocalDate dateOfBirth, String sex,
             String emailAddress, String phoneNumber, String nationalId, String county) {
