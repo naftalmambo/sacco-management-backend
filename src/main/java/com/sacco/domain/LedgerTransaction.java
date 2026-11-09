@@ -1,13 +1,24 @@
 package com.sacco.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "transactions")
+
 public class LedgerTransaction {
+    @Id
+
     private long transactionId;
     private long accountId;
     private String transactionType;
     private long amountInCents;
     private LocalDateTime createdAt;
+
+    protected LedgerTransaction() {
+    }
 
     public LedgerTransaction(long accountId, String transactionType, long amountInCents) {
         validateTransaction(transactionType, amountInCents);
