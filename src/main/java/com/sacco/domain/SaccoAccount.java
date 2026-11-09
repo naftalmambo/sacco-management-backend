@@ -1,8 +1,15 @@
 package com.sacco.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "accounts")
+
 public class SaccoAccount {
+    @Id
 
     private long accountId;
     private long memberId;
@@ -11,6 +18,9 @@ public class SaccoAccount {
     private long balanceInCents;
     private String accountStatus;
     private LocalDateTime createdAt;
+
+    protected SaccoAccount() {
+    }
 
     public SaccoAccount(long memberId, String accountNumber, String accountType) {
         this.accountId = 0;
