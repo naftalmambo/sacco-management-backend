@@ -1,8 +1,16 @@
 package com.sacco.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "loans")
+
 public class Loan {
+    @Id
+
     private long loanId;
     private long memberId;
     private long principleAmountInCents;
@@ -11,6 +19,9 @@ public class Loan {
     private String loanStatus;
     private LocalDateTime appliedAt;
     private LocalDateTime disbursedAt;
+
+    protected Loan() {
+    }
 
     public Loan(long memberId, long principleAmountInCents, double interestRate) {
         validateLoanData(principleAmountInCents, interestRate);
