@@ -77,6 +77,10 @@ public class SaccoAccount {
         }
     }
 
+    public void setBalanceInCents(long balanceInCents) {
+        this.balanceInCents = balanceInCents;
+    }
+
     public void withdraw(long amountInCents) {
         if (!(accountType.equalsIgnoreCase("SAVINGS"))) {
             throw new IllegalArgumentException("Withdrawals are restricted strictly to SAVINGS accounts only");
