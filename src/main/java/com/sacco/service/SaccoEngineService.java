@@ -107,79 +107,45 @@ public class SaccoEngineService {
                 + " KSh withdrawn from Account ID " + accountId);
     }
 
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processCashDeposit(long accountId, long amountInCents) {
         if (amountInCents <= 0) {
             System.out.println("TRANSACTION BLOCKED: Deposit amount must be greater than zero.");
             return;
         }
 
-        try (Connection conn = com.sacco.database.DatabaseManager.getConnection()) {
-            conn.setAutoCommit(false);
+        SaccoAccount account = (accountRepo != null) ? accountRepo.findById(accountId).orElse(null) : null;
 
-            try {
-                SaccoAccount account = null;
-                String lookupSql = "SELECT * FROM accounts WHERE account_id = ?;";
-
-                try (PreparedStatement stmt = conn.prepareStatement(lookupSql)) {
-                    stmt.setLong(1, accountId);
-
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (rs.next()) {
-                            java.math.BigDecimal dbNumeric = rs.getBigDecimal("balance");
-                            long balanceInCents = dbNumeric.movePointRight(2).longValue();
-
-                            account = new SaccoAccount(
-                                    rs.getLong("account_id"),
-                                    rs.getLong("member_id"),
-                                    rs.getString("account_number"),
-                                    rs.getString("account_type"),
-                                    balanceInCents,
-                                    rs.getString("account_status"),
-                                    rs.getTimestamp("created_at").toLocalDateTime());
-                        }
-                    }
-                }
-
-                if (account == null) {
-                    throw new SQLException(
-                            "Security Alert: Target Account ID " + accountId + " does not exist on disk.");
-                }
-
-                if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())) {
-                    throw new SQLException(
-                            "Transaction Violation: Counter cash deposits are strictly restricted to SAVINGS accounts.");
-                }
-
-                if (!"ACTIVE".equalsIgnoreCase(account.getAccountStatus())) {
-                    throw new SQLException(
-                            "Account Deactivated: Transaction blocked. Target account status is: "
-                                    + account.getAccountStatus());
-                }
-
-                long currentBalance = account.getBalanceInCents();
-                long newBalance = currentBalance + amountInCents;
-
-                accountRepo.updateBalance(conn, accountId, newBalance);
-                if (transactionRepo != null) {
-
-                    LedgerTransaction tx = new LedgerTransaction(accountId, "DEPOSIT", amountInCents);
-                    transactionRepo.save(tx);
-                }
-
-                conn.commit();
-                System.out.println("TRANSACTION SUCCESSFUL: " + (amountInCents / 100.0)
-                        + " KSh deposited to Account ID " + accountId);
-
-            } catch (SQLException e) {
-                conn.rollback();
-                System.out.println("🚨 EMERGENCY ROLLBACK TRIGGERED: " + e.getMessage());
-            } finally {
-                conn.setAutoCommit(true);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Critical System Database Drop Exception: " + e.getMessage());
+        if (account == null) {
+            throw new RuntimeException(
+                    "Security Alert: Target Account ID " + accountId + " does not exist on disk.");
         }
+
+        if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())) {
+            throw new RuntimeException(
+                    "Transaction Violation: Counter cash deposits are strictly restricted to SAVINGS accounts.");
+        }
+
+        if (!"ACTIVE".equalsIgnoreCase(account.getAccountStatus())) {
+            throw new RuntimeException(
+                    "Account Deactivated: Transaction blocked. Target account status is: "
+                            + account.getAccountStatus());
+        }
+
+        long currentBalance = account.getBalanceInCents();
+        long newBalance = currentBalance + amountInCents;
+
+        account.setBalanceInCents(newBalance);
+        accountRepo.save(account);
+
+        if (transactionRepo != null) {
+
+            LedgerTransaction tx = new LedgerTransaction(accountId, "DEPOSIT", amountInCents);
+            transactionRepo.save(tx);
+        }
+
+        System.out.println("TRANSACTION SUCCESSFUL: " + (amountInCents / 100.0)
+                + " KSh deposited to Account ID " + accountId);
     }
 
     public void processLoanDisbursement(long loanId) {
