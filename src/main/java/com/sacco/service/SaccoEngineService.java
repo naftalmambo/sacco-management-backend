@@ -148,96 +148,63 @@ public class SaccoEngineService {
                 + " KSh deposited to Account ID " + accountId);
     }
 
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processLoanDisbursement(long loanId) {
-        try (Connection conn = com.sacco.database.DatabaseManager.getConnection()) {
-            conn.setAutoCommit(false);
 
-            try {
-                Loan loan = null;
-                String lookupLoanSql = "SELECT * FROM loans WHERE loan_id = ?;";
-
-                try (PreparedStatement stmt = conn.prepareStatement(lookupLoanSql)) {
-                    stmt.setLong(1, loanId);
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (rs.next()) {
-                            java.math.BigDecimal dbPrincipal = rs.getBigDecimal("principal_amount");
-                            long principalInCents = dbPrincipal.movePointRight(2).longValue();
-                            java.math.BigDecimal dbInterest = rs.getBigDecimal("interest_owed");
-                            long interestOwedInCents = dbInterest.movePointRight(2).longValue();
-
-                            loan = new Loan(
-                                    rs.getLong("loan_id"),
-                                    rs.getLong("member_id"),
-                                    principalInCents,
-                                    rs.getDouble("interest_rate"),
-                                    interestOwedInCents,
-                                    rs.getString("loan_status"),
-                                    rs.getTimestamp("applied_at").toLocalDateTime(),
-                                    rs.getTimestamp("disbursed_at") != null
-                                            ? rs.getTimestamp("disbursed_at").toLocalDateTime()
-                                            : null);
-                        }
-                    }
-                }
-
-                if (loan == null) {
-                    throw new SQLException("Credit Error: Loan record with ID " + loanId + " does not exist.");
-                }
-
-                if (!"PENDING APPROVAL".equalsIgnoreCase(loan.getLoanStatus())) {
-                    throw new SQLException("Transaction Aborted: Only PENDING APPROVAL facilities can be disbursed.");
-                }
-
-                long memberId = loan.getMemberId();
-
-                SaccoAccount savingsAccount = accountRepo.findSavingsAccountByMemberId(conn, memberId);
-                SaccoAccount loanAccount = accountRepo.findLoanAccountByMemberId(conn, memberId);
-
-                if (savingsAccount == null) {
-                    throw new SQLException("Disbursement Failure: Active SAVINGS account tracking record missing.");
-                }
-                if (loanAccount == null) {
-                    throw new SQLException("Disbursement Failure: Active LOAN balance sheet account missing.");
-                }
-
-                loan.disburseLoan();
-                long principalAmount = loan.getPrincipleAmountInCents();
-                long newSavingsBalance = savingsAccount.getBalanceInCents() + principalAmount;
-                long newLoanAccountBalance = loanAccount.getBalanceInCents() + principalAmount;
-
-                String updateLoanSql = "UPDATE loans SET loan_status = 'ACTIVE', interest_owed = ?, disbursed_at = CURRENT_TIMESTAMP WHERE loan_id = ?;";
-                try (PreparedStatement stmt = conn.prepareStatement(updateLoanSql)) {
-                    stmt.setBigDecimal(1, java.math.BigDecimal.valueOf(loan.getInterestOwedInCents(), 2));
-                    stmt.setLong(2, loanId);
-                    stmt.executeUpdate();
-                }
-
-                accountRepo.updateBalance(conn, savingsAccount.getAccountId(), newSavingsBalance);
-                accountRepo.updateBalance(conn, loanAccount.getAccountId(), newLoanAccountBalance);
-
-                if (transactionRepo != null) {
-                    LedgerTransaction loanTx = new LedgerTransaction(loanAccount.getAccountId(), "LOAN_DISBURSEMENT",
-                            principalAmount);
-                    transactionRepo.save(loanTx);
-
-                    LedgerTransaction savingsTx = new LedgerTransaction(savingsAccount.getAccountId(), "DEPOSIT",
-                            principalAmount);
-                    transactionRepo.save(savingsTx);
-                }
-
-                conn.commit();
-                System.out.println("LOAN FACILITY ONLINE: " + (principalAmount / 100.0)
-                        + " KSh disbursed directly to Savings Account No: " + savingsAccount.getAccountNumber());
-
-            } catch (SQLException e) {
-                conn.rollback();
-                System.out.println("🚨 CREDIT TRANSACTION ROLLBACK TRIGGERED: " + e.getMessage());
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            System.out.println("Critical Credit Engine Core Crash Exception: " + e.getMessage());
+        Loan loan = (loanRepo != null) ? loanRepo.findById(loanId).orElse(null) : null;
+        if (loan == null) {
+            throw new RuntimeException("Credit Error: Loan record with ID " + loanId + " does not exist.");
         }
+
+        if (!"PENDING APPROVAL".equalsIgnoreCase(loan.getLoanStatus())) {
+            throw new RuntimeException(
+                    "Transaction Aborted: Only PENDING APPROVAL facilities can be disbursed.");
+        }
+
+        long memberId = loan.getMemberId();
+
+        SaccoAccount savingsAccount = (accountRepo != null)
+                ? accountRepo.findByMemberIdAndAccountType(memberId, "SAVINGS").orElse(null)
+                : null;
+        SaccoAccount loanAccount = (accountRepo != null)
+                ? accountRepo.findByMemberIdAndAccountType(memberId, "LOAN").orElse(null)
+                : null;
+
+        if (savingsAccount == null) {
+            throw new RuntimeException("Disbursement Failure: Active SAVINGS account tracking record missing.");
+        }
+        if (loanAccount == null) {
+            throw new RuntimeException("Disbursement Failure: Active LOAN balance sheet account missing.");
+        }
+
+        loan.disburseLoan();
+        long principalAmount = loan.getPrincipleAmountInCents();
+        long newSavingsBalance = savingsAccount.getBalanceInCents() + principalAmount;
+        long newLoanAccountBalance = loanAccount.getBalanceInCents() + principalAmount;
+
+        if (loanRepo != null) {
+            loanRepo.save(loan);
+        }
+        savingsAccount.setBalanceInCents(newSavingsBalance);
+        loanAccount.setBalanceInCents(newLoanAccountBalance);
+
+        if (accountRepo != null) {
+            accountRepo.save(savingsAccount);
+            accountRepo.save(loanAccount);
+        }
+
+        if (transactionRepo != null) {
+            LedgerTransaction loanTx = new LedgerTransaction(loanAccount.getAccountId(), "LOAN_DISBURSEMENT",
+                    principalAmount);
+            transactionRepo.save(loanTx);
+
+            LedgerTransaction savingsTx = new LedgerTransaction(savingsAccount.getAccountId(), "DEPOSIT",
+                    principalAmount);
+            transactionRepo.save(savingsTx);
+        }
+
+        System.out.println("LOAN FACILITY ONLINE: " + (principalAmount / 100.0)
+                + " KSh disbursed directly to Savings Account No: " + savingsAccount.getAccountNumber());
     }
 
     public void processLoanRepayment(long loanId, long amountInCents, boolean isCashPayment) {
