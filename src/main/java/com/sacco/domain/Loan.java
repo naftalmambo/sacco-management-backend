@@ -80,6 +80,18 @@ public class Loan {
         return this.disbursedAt;
     }
 
+    public void setLoanStatus(String loanStatus) {
+        this.loanStatus = loanStatus;
+    }
+
+    public void setPrincipleAmountInCents(long principleAmountInCents) {
+        this.principleAmountInCents = principleAmountInCents;
+    }
+
+    public void setInterestOwedInCents(long interestOwedInCents) {
+        this.interestOwedInCents = interestOwedInCents;
+    }
+
     private void validateLoanData(long principleAmountInCents, double interestRate) {
         if (principleAmountInCents <= 0 || interestRate <= 0) {
             throw new IllegalArgumentException(
