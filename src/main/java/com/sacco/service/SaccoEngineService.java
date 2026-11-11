@@ -6,20 +6,26 @@ import com.sacco.repository.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@org.springframework.stereotype.Service
 public class SaccoEngineService {
 
-    private MemberRepository memberRepo;
-    private AccountRepository accountRepo;
-    private TransactionRepository transactionRepo;
-    private LoanRepository loanRepo;
+    private final MemberRepository memberRepo;
+    private final AccountRepository accountRepo;
+    private final TransactionRepository transactionRepo;
+    private final LoanRepository loanRepo;
 
-    public SaccoEngineService() {
-        this.memberRepo = null;
-        this.accountRepo = null;
-        this.loanRepo = null;
-        this.transactionRepo = null;
+    public SaccoEngineService(MemberRepository memberRepo,
+            AccountRepository accountRepo,
+            TransactionRepository transactionRepo,
+            LoanRepository loanRepo) {
+
+        this.memberRepo = memberRepo;
+        this.accountRepo = accountRepo;
+        this.loanRepo = loanRepo;
+        this.transactionRepo = transactionRepo;
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public void runMemberAuditReport(long memberId) {
         SaccoMember member = (memberRepo != null) ? memberRepo.findById(memberId).orElse(null) : null;
         if (member == null) {
@@ -60,6 +66,33 @@ public class SaccoEngineService {
                 System.out.println(creditRecord);
             }
         }
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public SaccoMember getMemberByNationalId(String nationalId) {
+        if (nationalId == null || nationalId.isBlank()) {
+            throw new IllegalArgumentException("Search Error: National ID cannot be empty.");
+        }
+
+        return memberRepo.findByNationalId(nationalId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Member Not Found: No record exists with National ID " + nationalId));
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<SaccoAccount> getAccountsByMemberId(long memberId) {
+        return accountRepo.findAllByMemberId(memberId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public SaccoAccount getAccountByNumber(String accountNumber) {
+        if (accountNumber == null || accountNumber.isBlank()) {
+            throw new IllegalArgumentException("Search Error: Account number cannot be empty.");
+        }
+
+        return accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException(
+                        "Account Not Found: No account exists with number " + accountNumber));
     }
 
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
