@@ -24,7 +24,7 @@ public class AccountController {
     }
 
     @GetMapping("/{accountNumber}")
-    public SaccoAccount geAccountByNumber(@PathVariable String accountNumber) {
+    public SaccoAccount getAccountByNumber(@PathVariable String accountNumber) {
         return saccoEngineService.getAccountByNumber(accountNumber);
     }
 
