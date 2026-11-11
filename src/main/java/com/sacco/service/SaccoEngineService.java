@@ -379,4 +379,27 @@ public class SaccoEngineService {
         return candidate;
     }
 
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public SaccoMember registerMember(String firstName, String lastName, java.time.LocalDate dateOfBirth,
+            String sex, String emailAddress, String phoneNumber, String nationalId, String county) {
+
+        SaccoMember newMember = new SaccoMember(firstName, lastName, dateOfBirth, sex, emailAddress, phoneNumber,
+                nationalId, county);
+
+        if (memberRepo.existsByNationalId(newMember.getNationalId())) {
+            throw new RuntimeException(
+                    "Duplicate Member: National ID " + newMember.getNationalId() + " is already registered.");
+        }
+        if (memberRepo.existsByEmailAddress(newMember.getEmailAddress())) {
+            throw new RuntimeException(
+                    "Duplicate Member: Email " + newMember.getEmailAddress() + " is already registered.");
+        }
+        if (memberRepo.existsByPhoneNumber(newMember.getPhoneNumber())) {
+            throw new RuntimeException(
+                    "Duplicate Member: Phone number " + newMember.getPhoneNumber() + " is already registered.");
+        }
+
+        return memberRepo.save(newMember);
+    }
+
 }
