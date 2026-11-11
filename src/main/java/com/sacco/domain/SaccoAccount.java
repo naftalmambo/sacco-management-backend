@@ -10,13 +10,25 @@ import java.time.LocalDateTime;
 
 public class SaccoAccount {
     @Id
-
+    @jakarta.persistence.Column(name = "account_id")
     private long accountId;
+
+    @jakarta.persistence.Column(name = "member_id")
     private long memberId;
+
+    @jakarta.persistence.Column(name = "account_number")
     private String accountNumber;
+
+    @jakarta.persistence.Column(name = "account_type")
     private String accountType;
+
+    @jakarta.persistence.Column(name = "balance")
     private long balanceInCents;
+
+    @jakarta.persistence.Column(name = "account_status")
     private String accountStatus;
+
+    @jakarta.persistence.Column(name = "created_at")
     private LocalDateTime createdAt;
 
     protected SaccoAccount() {
