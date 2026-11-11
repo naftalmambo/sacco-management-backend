@@ -15,6 +15,8 @@ public interface AccountRepository extends JpaRepository<SaccoAccount, Long> {
 
     Optional<SaccoAccount> findByMemberIdAndAccountType(Long memberId, String accountType);
 
+    Optional<SaccoAccount> findByAccountNumber(String accountNumber);
+
     default void updateBalance(Connection conn, long accountId, long newBalanceInCents) throws SQLException {
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
 
