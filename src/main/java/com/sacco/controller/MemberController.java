@@ -3,6 +3,8 @@ package com.sacco.controller;
 import com.sacco.service.SaccoEngineService;
 import com.sacco.domain.SaccoMember;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,19 @@ public class MemberController {
     @GetMapping("/search/{nationalId}")
     public SaccoMember searchMemberByNationalId(@PathVariable String nationalId) {
         return saccoEngineService.getMemberByNationalId(nationalId);
+    }
+
+    @PostMapping
+    public SaccoMember registerMember(@RequestBody SaccoMember request) {
+        return saccoEngineService.registerMember(
+                request.getFirstName(),
+                request.getLastName(),
+                request.getDateOfBirth(),
+                request.getSex(),
+                request.getEmailAddress(),
+                request.getPhoneNumber(),
+                request.getNationalId(),
+                request.getCounty());
     }
 
 }
