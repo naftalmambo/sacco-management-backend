@@ -13,16 +13,33 @@ import java.time.LocalDate;
 public class SaccoMember {
     @Id
 
+    @jakarta.persistence.Column(name = "member_id")
     private long memberId;
+
+    @jakarta.persistence.Column(name = "first_name")
     private String firstName;
+
+    @jakarta.persistence.Column(name = "last_name")
     private String lastName;
+
+    @jakarta.persistence.Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
     private String sex;
+
+    @jakarta.persistence.Column(name = "email_address")
     private String emailAddress;
+
+    @jakarta.persistence.Column(name = "phone_number")
     private String phoneNumber;
+
+    @jakarta.persistence.Column(name = "national_id")
     private String nationalId;
+
     private String country;
     private String county;
+
+    @jakarta.persistence.Column(name = "joined_date")
     private LocalDateTime joinedDate;
 
     protected SaccoMember() {
