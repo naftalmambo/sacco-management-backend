@@ -2,6 +2,8 @@ package com.sacco.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 
 public class SaccoAccount {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @jakarta.persistence.Column(name = "account_id")
     private long accountId;
 
