@@ -10,14 +10,29 @@ import java.time.LocalDateTime;
 
 public class Loan {
     @Id
-
+    @jakarta.persistence.Column(name = "loan_id")
     private long loanId;
+
+    @jakarta.persistence.Column(name = "member_id")
     private long memberId;
+
+    @jakarta.persistence.Column(name = "principal_amount")
+
     private long principleAmountInCents;
+
+    @jakarta.persistence.Column(name = "interest_rate")
     private double interestRate;
+
+    @jakarta.persistence.Column(name = "interest_owed")
     private long interestOwedInCents;
+
+    @jakarta.persistence.Column(name = "loan_status")
     private String loanStatus;
+
+    @jakarta.persistence.Column(name = "applied_at")
     private LocalDateTime appliedAt;
+
+    @jakarta.persistence.Column(name = "disbursed_at")
     private LocalDateTime disbursedAt;
 
     protected Loan() {
