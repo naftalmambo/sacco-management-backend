@@ -2,6 +2,9 @@ package com.sacco.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -12,7 +15,7 @@ import java.time.LocalDate;
 
 public class SaccoMember {
     @Id
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @jakarta.persistence.Column(name = "member_id")
     private long memberId;
 
@@ -62,6 +65,7 @@ public class SaccoMember {
         this.nationalId = nationalId;
         this.country = "Kenya";
         this.county = county;
+        this.joinedDate = LocalDateTime.now();
     }
 
     public SaccoMember(long memberId, String firstName, String lastName, LocalDate dateOfBirth, String sex,
