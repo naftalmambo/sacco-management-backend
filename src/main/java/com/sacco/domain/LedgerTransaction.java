@@ -10,11 +10,19 @@ import java.time.LocalDateTime;
 
 public class LedgerTransaction {
     @Id
-
+    @jakarta.persistence.Column(name = "transaction_id")
     private long transactionId;
+
+    @jakarta.persistence.Column(name = "account_id")
     private long accountId;
+
+    @jakarta.persistence.Column(name = "transaction_type")
     private String transactionType;
+
+    @jakarta.persistence.Column(name = "amount")
     private long amountInCents;
+
+    @jakarta.persistence.Column(name = "created_at")
     private LocalDateTime createdAt;
 
     protected LedgerTransaction() {
