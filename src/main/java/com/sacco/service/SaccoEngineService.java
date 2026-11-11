@@ -341,4 +341,42 @@ public class SaccoEngineService {
         System.out.println("REPAYMENT PROCESSED SUCCESSFULLY: " + (amountInCents / 100.0)
                 + " KSh applied to Loan ID " + loanId + " (Status: " + newLoanStatus + ")");
     }
+
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public SaccoAccount createAccount(long memberId, String accountType) {
+        if (accountType == null || accountType.isBlank()) {
+            throw new IllegalArgumentException("Validation Error: Account type cannot be empty.");
+        }
+
+        String normalizedType = accountType.trim().toUpperCase();
+        if (!normalizedType.equals("SAVINGS") && !normalizedType.equals("SHARES") && !normalizedType.equals("LOAN")) {
+            throw new IllegalArgumentException("Validation Error: Account type must be SAVINGS, SHARES, or LOAN.");
+        }
+
+        if (!memberRepo.existsById(memberId)) {
+            throw new RuntimeException("Member Not Found: Cannot open account for non-existent Member ID " + memberId);
+        }
+
+        if (accountRepo.findByMemberIdAndAccountType(memberId, normalizedType).isPresent()) {
+            throw new RuntimeException(
+                    "Duplicate Account: Member ID " + memberId + " already holds a " + normalizedType + " account.");
+        }
+
+        String accountNumber = generateUniqueAccountNumber();
+        SaccoAccount newAccount = new SaccoAccount(memberId, accountNumber, normalizedType);
+        return accountRepo.save(newAccount);
+    }
+
+    private String generateUniqueAccountNumber() {
+        java.util.concurrent.ThreadLocalRandom random = java.util.concurrent.ThreadLocalRandom.current();
+        String candidate;
+
+        do {
+            long suffix = random.nextLong(100_000_000L, 1_000_000_000L);
+            candidate = "128" + suffix;
+
+        } while (accountRepo.findByAccountNumber(candidate).isPresent());
+        return candidate;
+    }
+
 }
