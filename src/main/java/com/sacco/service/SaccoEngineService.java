@@ -101,6 +101,23 @@ public class SaccoEngineService {
 
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Loan> getLoansByMemberId(long memberId) {
+        return loanRepo.findAllByMemberId(memberId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public Loan applyForLoan(long memberId, long principalAmountInCents, double interestRate) {
+        if (!memberRepo.existsById(memberId)) {
+            throw new RuntimeException(
+                    "Member Not Found: Cannot apply for loan for non-existent Member ID " + memberId);
+        }
+
+        Loan newLoan = new Loan(memberId, principalAmountInCents, interestRate);
+        newLoan.applyForLoan();
+        return loanRepo.save(newLoan);
+    }
+
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processCashWithdrawal(long accountId, long amountInCents) {
         if (amountInCents <= 0) {
