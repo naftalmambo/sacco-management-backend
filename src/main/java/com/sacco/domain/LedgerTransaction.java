@@ -3,6 +3,8 @@ package com.sacco.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 
 public class LedgerTransaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @jakarta.persistence.Column(name = "transaction_id")
     private long transactionId;
 
