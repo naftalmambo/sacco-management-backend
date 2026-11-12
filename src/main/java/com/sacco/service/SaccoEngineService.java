@@ -95,6 +95,12 @@ public class SaccoEngineService {
                         "Account Not Found: No account exists with number " + accountNumber));
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<LedgerTransaction> getRecentTransactions(long accountId) {
+        return transactionRepo.findTop10ByAccountIdOrderByCreatedAtDesc(accountId);
+
+    }
+
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processCashWithdrawal(long accountId, long amountInCents) {
         if (amountInCents <= 0) {
@@ -301,7 +307,7 @@ public class SaccoEngineService {
             newInterestOwed = currentInterestOwed - remainingPayment;
         }
 
-        String newLoanStatus = (newPrincipalOwed == 0 && newInterestOwed == 0) ? "SETTLED" : "ACTIVE";
+        String newLoanStatus = (newPrincipalOwed == 0 && newInterestOwed == 0) ? "FULLY PAID" : "ACTIVE";
 
         loan.setLoanStatus(newLoanStatus);
         loan.setPrincipleAmountInCents(newPrincipalOwed);
