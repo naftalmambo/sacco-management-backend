@@ -1,63 +1,86 @@
 package com.sacco.service;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import com.sacco.repository.*;
+import com.sacco.domain.*;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 public class SaccoEngineServiceTest {
 
+    @Mock
+    private MemberRepository memberRepo;
+
+    @Mock
+    private AccountRepository accountRepo;
+
+    @Mock
+    private TransactionRepository transactionRepo;
+
+    @Mock
+    private LoanRepository loanRepo;
+
+    @InjectMocks
+    private SaccoEngineService saccoEngineService;
+
     @Test
-    public void testInterestFirstRepaymnetlogic() {
+    void rejectsWithdrawalBelowMinimumBalance() {
+        SaccoAccount savings = new SaccoAccount(1L, "128456123790", "SAVINGS");
+        savings.setBalanceInCents(150_000L);
 
-        long initialPrincipalInCents = 16500000L;
-        long initialInterestOwedInCents = 1980000L;
-        long paymentAmountInCents = 500000L;
+        when(accountRepo.findById(2L)).thenReturn(Optional.of(savings));
 
-        long remainingPayment = paymentAmountInCents;
-        long newInterestOwed = initialInterestOwedInCents;
-        long newPrincipalOwed = initialPrincipalInCents;
+        RuntimeException error = assertThrows(RuntimeException.class,
+                () -> saccoEngineService.processCashWithdrawal(2L, 100_000L));
 
-        if (remainingPayment >= initialInterestOwedInCents) {
-            remainingPayment -= initialInterestOwedInCents;
-            newInterestOwed = 0;
-            newPrincipalOwed = initialPrincipalInCents - remainingPayment;
-        } else {
-            newInterestOwed = initialInterestOwedInCents - remainingPayment;
-            remainingPayment = 0;
-        }
+        assertTrue(error.getMessage().contains("1,000.00 KSh"));
+        verifyNoInteractions(transactionRepo);
+        verify(accountRepo, never()).save(any());
+    }
 
-        assertEquals(1480000L, newInterestOwed, "Interest owed must drop by exactly 5,000.00 KSh");
-        assertEquals(16500000L, newPrincipalOwed, "Principal amount must remain completely untouched");
-        assertEquals(0L, remainingPayment, "The payment balance must be entirely absorbed");
+    @Test
+    void withdrawsCashWithinBalanceLimit() {
+        SaccoAccount savings = new SaccoAccount(1L, "128456123790", "SAVINGS");
+        savings.setBalanceInCents(500_000L);
+
+        when(accountRepo.findById(2L)).thenReturn(Optional.of(savings));
+
+        saccoEngineService.processCashWithdrawal(2L, 200_000L);
+
+        assertEquals(300_000L, savings.getBalanceInCents());
+        verify(accountRepo).save(savings);
+        verify(transactionRepo).save(any());
 
     }
 
     @Test
-    public void testWithdrawalWithinLiquidityLimits() {
-        long initialBalanceInCents = 500000L;
-        long withdrawalAmountInCents = 200000L;
-        long minimumFloorLimitInCents = 100000L;
+    void repaymentCoversInterestBeforePrincipal() {
+        Loan loan = new Loan(1L, 16_500_000L, 12.0);
+        loan.applyForLoan();
+        loan.disburseLoan();
 
-        long finalBalanceInCents = initialBalanceInCents - withdrawalAmountInCents;
+        SaccoAccount loanAccount = new SaccoAccount(1L, "128456123791", "LOAN");
+        loanAccount.setBalanceInCents(18_480_000L);
 
-        assertTrue(finalBalanceInCents >= minimumFloorLimitInCents,
-                "The final balance must remain safely above the floor limit.");
-        assertEquals(300000L, finalBalanceInCents,
-                "The remaining balance must be exactly 3,000.00 KSh (300,000 cents).");
+        when(loanRepo.findById(1L)).thenReturn(Optional.of(loan));
+        when(accountRepo.findByMemberIdAndAccountType(1L, "LOAN")).thenReturn(Optional.of(loanAccount));
 
+        saccoEngineService.processLoanRepayment(1L, 500_000L, true);
+
+        assertEquals(1_480_000L, loan.getInterestOwedInCents());
+        assertEquals(16_500_000L, loan.getPrincipleAmountInCents());
+        verify(loanRepo).save(loan);
+        verify(accountRepo).save(loanAccount);
     }
 
-    @Test
-    public void testWithdrawalViolatingMinimumLiquidityShield() {
-        long initialBalanceInCents = 150000L;
-        long withdrawalAmountInCents = 100000L;
-        long minimumFloorLimitInCents = 100000L;
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            long projectedBalance = initialBalanceInCents - withdrawalAmountInCents;
-            if (projectedBalance < minimumFloorLimitInCents) {
-                throw new IllegalArgumentException(
-                        "Transaction baseline violation: Minimum liquidity shield breached.");
-            }
-        }, "The engine must throw an IllegalArgumentException if the remaining balance drops below 1,000.00 KSh.");
-    }
 }
