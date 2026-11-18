@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Core Banking Ledger - Teller Portal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Core Banking Ledger</h1>
+        <span class="subtitle">Branch Teller Operations Portal</span>
+      </div>
+
+      <form id="login-form" class="login-bar">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit" class="btn primary">Sign In</button>
+        <button type="button" id="logout-btn" class="btn secondary hidden">
+          Sign Out
+        </button>
+      </form>
+    </header>
+
+    <main class="container">
+      <div id="alert-box" class="alert hidden"></div>
+
+      <section id="locked-panel" class="card center">
+        <h2>Teller Authentication Required</h2>
+        <p>
+          Sign in with your branch staff credentials to access customer records
+          and process transactions.
+        </p>
+      </section>
+
+      <div id="workspace" class="hidden">
+        <section class="grid-2">
+          <div class="card">
+            <h2>Find Customer by National ID</h2>
+            <form id="search-form" class="inline-form">
+              <input
+                type="text"
+                id="search-national-id"
+                placeholder="Enter National ID (e.g 29845120)"
+                autocomplete="off"
+                required
+              />
+              <button type="submit" class="btn primary">Load Profile</button>
+            </form>
+
+            <div id="customer-profile" class="profile-box hidden">
+              <h3 id="customer-name"></h3>
+              <p>
+                <strong>Customer ID:</strong> <span id="customer-id"></span> |
+                <strong>National ID:</strong>
+                <span id="customer-national-id"></span>
+              </p>
+              <p>
+                <strong>Date of Birth:</strong>
+                <span id="customer-date-of-birth"></span> |
+                <strong>Sex:</strong> <span id="customer-sex"></span>
+              </p>
+              <p>
+                <strong>Email:</strong> <span id="customer-email"></span> |
+                <strong>Phone:</strong> <span id="customer-phone"></span>
+              </p>
+              <p>
+                <strong>County:</strong> <span id="customer-county"></span> |
+                <strong>Country:</strong> <span id="customer-country"></span>
+              </p>
+              <p>
+                <strong>Joined Date:</strong>
+                <span id="customer-joined-date"></span>
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Register New Customer</h2>
+            <form id="register-form" class="stack-form">
+              <input
+                type="text"
+                id="national-id"
+                placeholder="National ID"
+                required
+              />
+              <div class="row-2">
+                <input
+                  type="text"
+                  id="first-name"
+                  placeholder="First Name"
+                  required
+                />
+                <input
+                  type="text"
+                  id="last-name"
+                  placeholder="Last Name"
+                  required
+                />
+              </div>
+              <div class="row-2">
+                <input type="date" id="date-of-birth" required />
+                <select id="sex" required>
+                  <option value="">Select Sex</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div class="row-2">
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Email Address"
+                  required
+                />
+                <input
+                  type="text"
+                  id="phone"
+                  placeholder="Phone (+2547...)"
+                  required
+                />
+              </div>
+              <select id="county" required>
+                <option value="">Select County</option>
+                <option value="Baringo">Baringo</option>
+                <option value="Bomet">Bomet</option>
+                <option value="Bungoma">Bungoma</option>
+                <option value="Busia">Busia</option>
+                <option value="Elgeyo-Marakwet">Elgeyo-Marakwet</option>
+                <option value="Embu">Embu</option>
+                <option value="Garissa">Garissa</option>
+                <option value="Homa Bay">Homa Bay</option>
+                <option value="Isiolo">Isiolo</option>
+                <option value="Kajiado">Kajiado</option>
+                <option value="Kakamega">Kakamega</option>
+                <option value="Kericho">Kericho</option>
+                <option value="Kiambu">Kiambu</option>
+                <option value="Kilifi">Kilifi</option>
+                <option value="Kirinyaga">Kirinyaga</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Kisumu">Kisumu</option>
+                <option value="Kitui">Kitui</option>
+                <option value="Kwale">Kwale</option>
+                <option value="Laikipia">Laikipia</option>
+                <option value="Lamu">Lamu</option>
+                <option value="Machakos">Machakos</option>
+                <option value="Makueni">Makueni</option>
+                <option value="Mandera">Mandera</option>
+                <option value="Marsabit">Marsabit</option>
+                <option value="Meru">Meru</option>
+                <option value="Migori">Migori</option>
+                <option value="Mombasa">Mombasa</option>
+                <option value="Murang'a">Murang'a</option>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Nakuru">Nakuru</option>
+                <option value="Nandi">Nandi</option>
+                <option value="Narok">Narok</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Nyandarua">Nyandarua</option>
+                <option value="Nyeri">Nyeri</option>
+                <option value="Samburu">Samburu</option>
+                <option value="Siaya">Siaya</option>
+                <option value="Taita-Taveta">Taita-Taveta</option>
+                <option value="Tana River">Tana River</option>
+                <option value="Tharaka-Nithi">Tharaka-Nithi</option>
+                <option value="Trans Nzoia">Trans Nzoia</option>
+                <option value="Turkana">Turkana</option>
+                <option value="Uasin Gishu">Uasin Gishu</option>
+                <option value="Vihiga">Vihiga</option>
+                <option value="Wajir">Wajir</option>
+                <option value="West Pokot">West Pokot</option>
+              </select>
+              <button type="submit" class="btn primary">
+                Register Customer
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-header">
+            <h2>Customer Accounts</h2>
+            <form id="open-account-form" class="inline-form">
+              <select id="account-type">
+                <option value="SAVINGS">SAVINGS</option>
+                <option value="SHARES">SHARES</option>
+                <option value="LOAN">LOAN</option>
+              </select>
+              <button type="submit" class="btn secondary">Open Account</button>
+            </form>
+          </div>
+          <div id="accounts-list" class="accounts-grid">
+            <p class="muted">
+              Search for a customer above to view their accounts here.
+            </p>
+          </div>
+        </section>
+
+        <section class="grid-2">
+          <div class="card">
+            <h2>Cash Teller Desk</h2>
+            <form id="cash-form" class="stack-form">
+              <label for="cash-account-id">Account ID</label>
+              <input
+                type="number"
+                id="cash-account-id"
+                placeholder="Select an account above or enter ID"
+                required
+              />
+
+              <label for="cash-amount">Amount (KSh)</label>
+              <input
+                type="number"
+                id="cash-amount"
+                step="0.01"
+                min="1"
+                placeholder="e.g. 2500.00"
+                required
+              />
+
+              <div class="row-2">
+                <button type="button" id="deposit-button" class="btn success">
+                  Deposit Cash
+                </button>
+                <button type="button" id="withdraw-button" class="btn danger">
+                  Withdraw Cash
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h2>Loan Facility Desk</h2>
+            <form id="loan-apply-form" class="stack-form">
+              <div class="row-2">
+                <input
+                  type="number"
+                  id="loan-principal"
+                  step="0.01"
+                  min="100"
+                  placeholder="Principal (KSh)"
+                  required
+                />
+                <input
+                  type="number"
+                  id="loan-interest-rate"
+                  step="0.1"
+                  min="1"
+                  value="12.0"
+                  placeholder="Interest Rate (%)"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn primary">
+                Submit Loan Application
+              </button>
+            </form>
+
+            <hr class="divider" />
+
+            <form id="loan-repay-form" class="stack-form">
+              <div class="row-2">
+                <input
+                  type="number"
+                  id="repay-loan-id"
+                  placeholder="Loan ID"
+                  required
+                />
+                <input
+                  type="number"
+                  id="repay-amount"
+                  step="0.01"
+                  min="1"
+                  placeholder="Repayment (KSh)"
+                  required
+                />
+              </div>
+              <div class="row-2">
+                <select id="repay-method">
+                  <option value="true">Cash Payment</option>
+                  <option value="false">Deduct from Savings</option>
+                </select>
+                <button type="submit" class="btn success">Repay Loan</button>
+              </div>
+            </form>
+          </div>
+        </section>
+        <section class="grid-2">
+          <div class="card">
+            <h2>Customer Loans</h2>
+            <div id="loans-list">
+              <p class="muted">No customer loaded yet.</p>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Recent Account Ledger</h2>
+            <div id="transactions-list">
+              <p class="muted">
+                Click "View Ledger" on any account card to inspect recent
+                transactions.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
