@@ -113,6 +113,16 @@ public class SaccoEngineService {
                     "Member Not Found: Cannot apply for loan for non-existent Member ID " + memberId);
         }
 
+        SaccoAccount savingsAccount = accountRepo.findByMemberIdAndAccountType(memberId, "SAVINGS")
+                .orElseThrow(() -> new RuntimeException(
+                        "Loan Eligibility Error: Member must hold an active SAVINGS account to apply for a loan."));
+
+        long minimumSavingsFloor = 7_500_000L;
+        if (savingsAccount.getBalanceInCents() < minimumSavingsFloor) {
+            throw new RuntimeException(
+                    "Loan Eligibility Error: Minimum SAVINGS balance of 75,000.00 KSh is required.");
+        }
+
         Loan newLoan = new Loan(memberId, principalAmountInCents, interestRate);
         newLoan.applyForLoan();
         return loanRepo.save(newLoan);
@@ -121,8 +131,7 @@ public class SaccoEngineService {
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processCashWithdrawal(long accountId, long amountInCents) {
         if (amountInCents <= 0) {
-            System.out.println("TRANSACTION BLOCKED: Withdrawal amount must be greater than zero.");
-            return;
+            throw new IllegalArgumentException("Transaction Error: Withdrawal Amount must be greater than zero.");
         }
 
         SaccoAccount account = (accountRepo != null) ? accountRepo.findById(accountId).orElse(null) : null;
@@ -162,8 +171,7 @@ public class SaccoEngineService {
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public void processCashDeposit(long accountId, long amountInCents) {
         if (amountInCents <= 0) {
-            System.out.println("TRANSACTION BLOCKED: Deposit amount must be greater than zero.");
-            return;
+            throw new IllegalArgumentException("Transaction Error: Deposit Amount must be greater than zero.");
         }
 
         SaccoAccount account = (accountRepo != null) ? accountRepo.findById(accountId).orElse(null) : null;
@@ -173,9 +181,10 @@ public class SaccoEngineService {
                     "Security Alert: Target Account ID " + accountId + " does not exist on disk.");
         }
 
-        if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())) {
+        if (!"SAVINGS".equalsIgnoreCase(account.getAccountType())
+                && !"SHARES".equalsIgnoreCase(account.getAccountType())) {
             throw new RuntimeException(
-                    "Transaction Violation: Counter cash deposits are strictly restricted to SAVINGS accounts.");
+                    "Transaction Violation: Counter cash deposits are restricted to SAVINGS and SHARES accounts.");
         }
 
         if (!"ACTIVE".equalsIgnoreCase(account.getAccountStatus())) {
@@ -260,10 +269,9 @@ public class SaccoEngineService {
     }
 
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
-    public void processLoanRepayment(long loanId, long amountInCents, boolean isCashPayment) {
+    public boolean processLoanRepayment(long loanId, long amountInCents, boolean isCashPayment) {
         if (amountInCents <= 0) {
-            System.out.println("TRANSACTION BLOCKED: Repayment amount must be greater than zero.");
-            return;
+            throw new IllegalArgumentException("Transaction Error: Repayment Amount must be greater than zero.");
         }
 
         Loan loan = (loanRepo != null) ? loanRepo.findById(loanId).orElse(null) : null;
@@ -342,9 +350,10 @@ public class SaccoEngineService {
             throw new RuntimeException("Repayment Aborted: Active LOAN balance sheet account missing.");
         }
 
-        long newLoanAccountBalance = loanAccount.getBalanceInCents() - amountInCents;
-
+        long principalPaid = currentPrincipalOwed - newPrincipalOwed;
+        long newLoanAccountBalance = loanAccount.getBalanceInCents() - principalPaid;
         loanAccount.setBalanceInCents(newLoanAccountBalance);
+
         if (accountRepo != null) {
             accountRepo.save(loanAccount);
         }
@@ -363,6 +372,7 @@ public class SaccoEngineService {
 
         System.out.println("REPAYMENT PROCESSED SUCCESSFULLY: " + (amountInCents / 100.0)
                 + " KSh applied to Loan ID " + loanId + " (Status: " + newLoanStatus + ")");
+        return "FULLY PAID".equals(newLoanStatus);
     }
 
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
