@@ -49,8 +49,14 @@ public class TransactionController {
     public String repayLoan(@PathVariable long loanId,
             @RequestParam long amountInCents,
             @RequestParam(defaultValue = "true") boolean isCashPayment) {
-        saccoEngineService.processLoanRepayment(loanId, amountInCents, isCashPayment);
-        return "Repayment of " + (amountInCents / 100.0) + " KSh processed for Loan ID " + loanId;
+        boolean isFullyPaid = saccoEngineService.processLoanRepayment(loanId, amountInCents, isCashPayment);
+
+        if (isFullyPaid) {
+            return "Loan ID " + loanId + " cleared! Full payoff of " + (amountInCents / 100.0)
+                    + " KSh received — facility is now FULLY PAID.";
+        }
+
+        return "Partial repayment of " + (amountInCents / 100.0) + " KSh processed for Loan ID " + loanId;
     }
 
 }
