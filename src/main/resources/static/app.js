@@ -9,6 +9,7 @@ const lockedPanel = document.getElementById("locked-panel");
 const workspace = document.getElementById("workspace");
 const loginForm = document.getElementById("login-form");
 const logoutButton = document.getElementById("logout-btn");
+const clearWorkspaceButton = document.getElementById("clear-workspace-btn");
 
 function showAlert(message, type = "success") {
   alertBox.textContent = message;
@@ -63,6 +64,7 @@ function unlockWorkspace() {
   passwordInput.classList.add("hidden");
   signInButton.classList.add("hidden");
   logoutButton.classList.remove("hidden");
+  clearWorkspaceButton.classList.remove("hidden");
 }
 function resetCustomerPanels(
   accountsMessage = "Search for a customer above to view their accounts here.",
@@ -79,6 +81,12 @@ function resetCustomerPanels(
   document.getElementById("transactions-list").innerHTML =
     '<p class="muted">Click "View Ledger" on any account card to inspect recent transactions.</p>';
 }
+function resetTransactionInputs() {
+  openAccountForm.reset();
+  cashForm.reset();
+  loanApplyForm.reset();
+  loanRepayForm.reset();
+}
 
 function signOut(message = "Signed out.") {
   authHeader = "";
@@ -91,6 +99,7 @@ function signOut(message = "Signed out.") {
   passwordInput.classList.remove("hidden");
   signInButton.classList.remove("hidden");
   logoutButton.classList.add("hidden");
+  clearWorkspaceButton.classList.add("hidden");
 
   loginForm.reset();
   searchForm.reset();
@@ -129,6 +138,21 @@ logoutButton.addEventListener("click", () => {
   signOut("Teller signed out safely.");
 });
 
+function clearWorkspace() {
+  activeCustomer = null;
+  searchForm.reset();
+  registerForm.reset();
+  cashForm.reset();
+  loanApplyForm.reset();
+  loanRepayForm.reset();
+  openAccountForm.reset();
+
+  document.getElementById("customer-profile").classList.add("hidden");
+  resetCustomerPanels();
+  showAlert("Workspace cleared. Ready for next customer.", "success");
+}
+clearWorkspaceButton.addEventListener("click", clearWorkspace);
+
 if (authHeader) {
   unlockWorkspace();
 }
@@ -162,6 +186,7 @@ searchForm.addEventListener("submit", async (event) => {
 
   const nationalId = document.getElementById("search-national-id").value.trim();
   resetCustomerPanels();
+  resetTransactionInputs();
   try {
     const member = await apiFetch(`/api/members/search/${nationalId}`);
     displayCustomerProfile(member);
@@ -220,6 +245,7 @@ registerForm.addEventListener("submit", async (event) => {
     );
     registerForm.reset();
     searchForm.reset();
+    resetTransactionInputs();
 
     showAlert(
       `Registered customer: ${createdMember.firstName} ${createdMember.lastName}.`,
@@ -390,11 +416,6 @@ async function processCashTransaction(action) {
       "error",
     );
     return;
-  }
-
-  if (activeCustomer) {
-    await loadCustomerAccounts(activeCustomer.memberId);
-    await refreshOpenLedger();
   }
 
   const targetAccount = activeAccounts.find(
