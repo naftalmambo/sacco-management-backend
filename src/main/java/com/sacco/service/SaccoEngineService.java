@@ -79,9 +79,15 @@ public class SaccoEngineService {
                         "Member Not Found: No record exists with National ID " + nationalId));
     }
 
+    private static final java.util.Map<String, Integer> ACCOUNT_DISPLAY_ORDER = java.util.Map.of("SHARES", 1, "SAVINGS",
+            2, "LOAN", 3);
+
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<SaccoAccount> getAccountsByMemberId(long memberId) {
-        return accountRepo.findAllByMemberId(memberId);
+        return accountRepo.findAllByMemberId(memberId).stream()
+                .sorted(java.util.Comparator.comparingInt(
+                        account -> ACCOUNT_DISPLAY_ORDER.getOrDefault(account.getAccountType(), 99)))
+                .toList();
     }
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
