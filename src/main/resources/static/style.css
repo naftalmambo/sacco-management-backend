@@ -132,6 +132,7 @@ select:focus {
   font-size: 0.9rem;
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color 0.15s ease;
 }
 
 .btn.primary {
@@ -145,13 +146,22 @@ select:focus {
   background-color: #e2e8f0;
   color: var(--text);
 }
+.btn.secondary:hover {
+  background-color: #cbd5e1;
+}
 .btn.success {
   background-color: var(--success);
   color: #ffffff;
 }
+.btn.success:hover {
+  background-color: #166534;
+}
 .btn.danger {
   background-color: var(--danger);
   color: #ffffff;
+}
+.btn.danger:hover {
+  background-color: #991b1b;
 }
 
 .alert {
