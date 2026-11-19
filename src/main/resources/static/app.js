@@ -2,6 +2,7 @@ let authHeader = sessionStorage.getItem("authHeader") || "";
 let activeCustomer = null;
 let activeAccounts = [];
 let activeLoans = [];
+let activeLedgerAccountId = null;
 
 const alertBox = document.getElementById("alert-box");
 const lockedPanel = document.getElementById("locked-panel");
@@ -69,6 +70,7 @@ function resetCustomerPanels(
 ) {
   activeAccounts = [];
   activeLoans = [];
+  activeLedgerAccountId = null;
 
   document.getElementById("accounts-list").innerHTML =
     `<p class="muted">${accountsMessage}</p>`;
@@ -382,13 +384,17 @@ async function processCashTransaction(action) {
   if (!input) {
     return;
   }
-
   if (!activeCustomer) {
     showAlert(
       "Load a customer profile first to verify account ownership.",
       "error",
     );
     return;
+  }
+
+  if (activeCustomer) {
+    await loadCustomerAccounts(activeCustomer.memberId);
+    await refreshOpenLedger();
   }
 
   const targetAccount = activeAccounts.find(
@@ -433,6 +439,7 @@ async function processCashTransaction(action) {
 
     if (activeCustomer) {
       await loadCustomerAccounts(activeCustomer.memberId);
+      await refreshOpenLedger();
     }
 
     showAlert(message, "success");
@@ -533,6 +540,8 @@ async function disbursementLoan(loanId) {
 
     await loadCustomerAccounts(activeCustomer.memberId);
     await loadCustomerLoans(activeCustomer.memberId);
+    await refreshOpenLedger();
+
     showAlert(message, "success");
   } catch (error) {
     if (error.message !== "Unauthorized") {
@@ -729,6 +738,7 @@ async function executeLoanRepayment(input) {
   loanRepayForm.reset();
   await loadCustomerAccounts(activeCustomer.memberId);
   await loadCustomerLoans(activeCustomer.memberId);
+  await refreshOpenLedger();
   showAlert(message, "success");
 }
 const loanRepayForm = document.getElementById("loan-repay-form");
@@ -799,7 +809,13 @@ function renderAccountLedger(transactions, targetAccount) {
   );
   transactionsList.innerHTML = header + cards.join("");
 }
+async function refreshOpenLedger() {
+  if (activeLedgerAccountId !== null) {
+    await loadAccountLedger(activeLedgerAccountId);
+  }
+}
 async function loadAccountLedger(accountId) {
+  activeLedgerAccountId = accountId;
   const targetAccount = activeAccounts.find(
     (account) => account.accountId === accountId,
   );
