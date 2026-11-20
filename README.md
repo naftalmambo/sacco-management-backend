@@ -92,7 +92,7 @@ sacco-management-backend/
 ├── pom.xml                                         # Maven dependencies & Java 17 / Spring Boot config
 ├── LICENSE                                         # Open-source MIT License terms
 ├── README.md                                       # Project documentation
-├── schema.sql                                      # Complete PostgreSQL DDL schema & constraints
+├── schema.sql                                      # Complete PostgreSQL Database backup
 ├── schema/                                         # Modular SQL schema & B-Tree index definitions
 │   ├── 01_members.sql
 │   ├── 02_accounts.sql
@@ -138,12 +138,12 @@ sacco-management-backend/
     │   └── resources/
     │       ├── application.properties              # Environment-driven datasource & JPA configuration
     │       └── static/
-    │           ├── index.html                      # Branch Teller Operations Portal markup
-    │           ├── style.css                       # Enterprise UI styling & layout
-    │           └── app.js                          # Frontend state, validation & REST client logic
+    │           ├── index.html                      # Dashboard structure
+    │           ├── style.css                       # UI styling & layout
+    │           └── app.js                          # Page interactivity, input checks & backend API calls
     └── test/
         └── java/com/sacco/service/
-            └── SaccoEngineServiceTest.java         # JUnit 5 & Mockito automated financial engine tests
+            └── SaccoEngineServiceTest.java         # JUnit 5 & Mockito automated financial tests
 ```
 
 ---
