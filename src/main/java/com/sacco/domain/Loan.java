@@ -19,6 +19,9 @@ public class Loan {
     @jakarta.persistence.Column(name = "member_id")
     private long memberId;
 
+    @jakarta.persistence.Column(name = "original_principal")
+    private long originalPrincipalInCents;
+
     @jakarta.persistence.Column(name = "principal_amount")
 
     private long principleAmountInCents;
@@ -45,6 +48,7 @@ public class Loan {
         validateLoanData(principleAmountInCents, interestRate);
         this.loanId = 0;
         this.memberId = memberId;
+        this.originalPrincipalInCents = principleAmountInCents;
         this.principleAmountInCents = principleAmountInCents;
         this.interestRate = interestRate;
         this.interestOwedInCents = 0;
@@ -53,11 +57,13 @@ public class Loan {
         this.disbursedAt = null;
     }
 
-    public Loan(long loanId, long memberId, long principleAmountInCents, double interestRate,
+    public Loan(long loanId, long memberId, long originalPrincipalInCents, long principleAmountInCents,
+            double interestRate,
             long interestOwedInCents, String loanStatus, LocalDateTime appliedAt, LocalDateTime disbursedAt) {
         validateLoanData(principleAmountInCents, interestRate);
         this.loanId = loanId;
         this.memberId = memberId;
+        this.originalPrincipalInCents = originalPrincipalInCents;
         this.principleAmountInCents = principleAmountInCents;
         this.interestRate = interestRate;
         this.interestOwedInCents = interestOwedInCents;
@@ -72,6 +78,10 @@ public class Loan {
 
     public long getMemberId() {
         return this.memberId;
+    }
+
+    public long getOriginalPrincipalInCents() {
+        return originalPrincipalInCents;
     }
 
     public long getPrincipleAmountInCents() {
