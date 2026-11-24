@@ -83,4 +83,25 @@ public class SaccoEngineServiceTest {
         verify(accountRepo).save(loanAccount);
     }
 
+    @Test
+    void fullRepaymentPreservesOriginalPrincipal() {
+        Loan loan = new Loan(1L, 125_000L, 12.0);
+        loan.applyForLoan();
+        loan.disburseLoan();
+        SaccoAccount loanAccount = new SaccoAccount(1L, "128456123791", "LOAN");
+        loanAccount.setBalanceInCents(140_000L);
+
+        when(loanRepo.findById(1L)).thenReturn(Optional.of(loan));
+        when(accountRepo.findByMemberIdAndAccountType(1L, "LOAN")).thenReturn(Optional.of(loanAccount));
+
+        boolean isFullyPaid = saccoEngineService.processLoanRepayment(1L, 140_000L, true);
+
+        assertTrue(isFullyPaid);
+        assertEquals("FULLY PAID", loan.getLoanStatus());
+        assertEquals(0L, loan.getPrincipleAmountInCents());
+        assertEquals(0L, loan.getInterestOwedInCents());
+        assertEquals(125_000L, loan.getOriginalPrincipalInCents());
+
+    }
+
 }
