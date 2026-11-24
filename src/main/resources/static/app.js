@@ -496,6 +496,7 @@ function renderLoanCard(loan) {
   return `
     <div class="account-card">
       <strong>Loan #${loan.loanId}</strong> (${loan.loanStatus})
+      <p class="muted">Original loan: ${formatKsh(loan.originalPrincipalInCents)}</p>
       <p class="muted">Principal Owed: ${formatKsh(loan.principleAmountInCents)}</p>
       <p class="muted">Interest Owed: ${formatKsh(loan.interestOwedInCents)} (${loan.interestRate}%)</p>
       <p class="muted">Applied: ${appliedAt}</p>
