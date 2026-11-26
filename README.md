@@ -51,7 +51,7 @@ The application is built as a **3-Tier Layered Monolith** packaged into a single
 - **Database Engine:** PostgreSQL (`BIGINT` integer-cents storage, Foreign Keys, `CHECK` constraints, B-Tree indexes)
 - **Frontend Portal:** Semantic HTML5, Modern CSS3, Vanilla ES6+ JavaScript (Zero framework overhead)
 - **Testing:** JUnit 5, Mockito (`SaccoEngineServiceTest`)
-- **Tooling & Environment:** Ubuntu Linux, Maven, VS Code, Git/GitHub
+- **Tooling & Environment:** Ubuntu Linux, Maven, VS Code, Git/GitHub, Docker & Docker Compose
 
 ---
 
@@ -89,6 +89,9 @@ The application is built as a **3-Tier Layered Monolith** packaged into a single
 
 ```text
 sacco-management-backend/
+├── Dockerfile                                      # Multi-stage Java 17 container image build
+├── docker-compose.yml                              # App & PostgreSQL container orchestration with persistent volume
+├── .dockerignore                                   # Excludes local build artifacts & secrets from images
 ├── pom.xml                                         # Maven dependencies & Java 17 / Spring Boot config
 ├── LICENSE                                         # Open-source MIT License terms
 ├── README.md                                       # Project documentation
@@ -148,7 +151,44 @@ sacco-management-backend/
 
 ---
 
-## 🚀 Getting Started (Local Setup)
+## 🚀 Getting Started
+
+### Option A: Quick Start with Docker (Recommended)
+
+#### Prerequisites
+
+To run this project with Docker, a new machine only needs the following (no local Java, Maven, or PostgreSQL installation required):
+
+1. **Git:** To clone the repository from GitHub
+2. **Docker Engine & Docker Compose:**
+   - **Linux (Ubuntu/Debian):** `docker.io` and `docker-compose-v2`
+   - **Windows or macOS:** [Docker Desktop](https://docker.com) (includes both Docker Engine and Docker Compose)
+
+#### 1. Clone & Launch
+
+```bash
+git clone https://github.com/naftalmambo/sacco-management-backend
+cd sacco-management-backend
+docker compose up -d --build
+```
+
+- PostgreSQL automatically creates `sacco_management_db` and initializes all tables from `schema/` on first boot.
+- Persistent database storage is saved in the `postgres_data` Docker volume across container restarts.
+
+#### 2. Access the Branch Teller Portal
+
+- **URL:** `http://localhost:8080/index.html`
+- **Default V1 Teller Credentials:** `teller` / `teller123`
+
+#### 3. Stop Containers (Preserving Data)
+
+```bash
+docker compose down
+```
+
+---
+
+### Option B: Manual Local Setup (Without Docker)
 
 ### Prerequisites
 
@@ -238,6 +278,7 @@ Open your browser and navigate to:
 - Interest-first loan repayment waterfall
 - Automated unit tests (JUnit 5 & Mockito)
 - Authenticated Teller Operations Portal
+- Packaged the application and database with Docker for portable deployment
 
 ### V2 — Idempotency & Concurrency Control
 
@@ -255,9 +296,8 @@ Open your browser and navigate to:
 - Downloadable PDF and CSV customer account statements
 - Automated SMS transaction receipts
 
-### V5 — Dockerization, Mobile Money & Cloud Hosting
+### V5 — Mobile Money & Cloud Hosting
 
-- Package the application and database with Docker for portable deployment
 - Safaricom M-Pesa integration (Paybill reconciliation & STK Push)
 - Live cloud hosting
 
